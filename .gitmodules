@@ -4,3 +4,6 @@
 [submodule "free5gc-compose"]
 	path = free5gc-compose
 	url = https://github.com/free5gc/free5gc-compose
+[submodule "srsRAN_Project"]
+	path = srsRAN_Project
+	url = https://github.com/srsran/srsRAN_Project
