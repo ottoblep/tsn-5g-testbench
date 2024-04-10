@@ -47,6 +47,13 @@ make -j`nproc`
 cd ..
 ```
 
+#### 2.1.5 OR Install srsRAN from binary
+```bash
+sudo add-apt-repository ppa:softwareradiosystems/srsran-project
+sudo apt-get update
+sudo apt-get install srsran-project -y
+```
+
 ### 3. Running
 
 #### 3.1. Run free5gc (Read logs with `docker logs smf/amp/upf/...`)
