@@ -16,6 +16,7 @@ Setup for a software emulated 5G-TSN bridge system.
 
 #### 1.1. Compile and install [GTP5G Kernel Module](https://github.com/free5gc/gtp5g)
 ```bash
+sudo apt-get install make gcc
 cd gtp5g
 make
 make install
@@ -27,6 +28,7 @@ cd ..
 
 #### 1.3. Pull free5gc images 
 ```bash
+sudo apt-get install docker docker-compose-plugin
 cd free5gc-compose
 docker compose pull
 cd ..
@@ -34,9 +36,9 @@ cd ..
 
 ### 2. srsRAN gNB setup according to [srsRAN gNB with srsUE guide](https://docs.srsran.com/projects/project/en/latest/tutorials/source/srsUE/source/index.html)
 
-#### 2.1. Install ZeroMQ and libzmq (`libzmq3-dev`)
-#### 2.2. Compile srsRAN
+#### 2.1. Compile srsRAN
 ```bash
+sudo apt-get install cmake make gcc g++ pkg-config libfftw3-dev libmbedtls-dev libsctp-dev libyaml-cpp-dev libgtest-dev libzmq3-dev
 cd srsRAN_Project
 mkdir build
 cd build
