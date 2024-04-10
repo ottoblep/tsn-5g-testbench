@@ -13,7 +13,7 @@ Package versions matching Ubuntu Jammy
 
 #### 0.1 Install Dependencies
 ```bash
-apt install git make gcc cmake g++ pkg-config libfftw3-dev libmbedtls-dev libsctp-dev libyaml-cpp-dev libgtest-dev libzmq3-dev docker docker-compose-plugin
+apt install git make gcc docker docker-compose-plugin
 ```
 
 #### 0.2 Clone this repo and pull submodules
@@ -23,7 +23,7 @@ git submodule update --init --recursive
 
 ### 1. Free5GC Setup according to the [free5gc docker compose guide](https://free5gc.org/guide/0-compose/)
 
-#### 1.1. Compile and install [GTP5G Kernel Module](https://github.com/free5gc/gtp5g)
+#### 1.1. Compile and install [GTP5G Kernel Module](https://github.com/free5gc/gtp5g) on host machine
 ```bash
 cd gtp5g
 make
@@ -32,32 +32,21 @@ modprobe gtp5g
 cd ..
 ```
 
-#### 1.2. Install docker and docker-compose
-
-#### 1.3. Pull free5gc images 
+#### 1.2. Pull free5gc images 
 ```bash
 cd free5gc-compose
 docker compose pull
 cd ..
 ```
 
-### 2. srsRAN gNB setup according to [srsRAN gNB with srsUE guide](https://docs.srsran.com/projects/project/en/latest/tutorials/source/srsUE/source/index.html)
+### 2. srsRAN docker setup 
 
-#### 2.1. Compile srsRAN
+#### 2.1. Pull docker images
 ```bash
-cd srsRAN_Project
-mkdir build
-cd build
-cmake ../ -DENABLE_EXPORT=ON -DENABLE_ZEROMQ=ON
-make -j`nproc`
-cd ..
-```
-
-#### 2.1.5 OR Install srsRAN from binary
-```bash
-sudo add-apt-repository ppa:softwareradiosystems/srsran-project
-sudo apt-get update
-sudo apt-get install srsran-project -y
+cd srsRAN_Project/docker
+docker compose pull
+# Some containers may need to be built from source (follow the recommendation in the output)
+cd ../..
 ```
 
 ### 3. Running
