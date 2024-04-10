@@ -1,6 +1,6 @@
-# 5G-TSN Testbench
+# 5g-tsn-testbench
 
-Contains automated deployment files for a software emulated 5G-TSN Bridge.
+Setup for a software emulated 5G-TSN bridge system.
 
 ## Components
 
@@ -8,7 +8,7 @@ Contains automated deployment files for a software emulated 5G-TSN Bridge.
 - **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) / [srsRAN](https://github.com/srsran/srsran_project)
 - **CN** [Free5GC](https://github.com/free5gc/free5gc)
 
-## Setup
+## Manual Setup
 
 #### 0. Clone this repo and pull submodules with `git submodule update --init --recursive`
 
@@ -52,9 +52,3 @@ cd ..
 cd free5gc-compose
 docker compose up
 ```
-
-## Alternative Setup on NixOS
-
-- Replace step 1.1 with [nixosModule for `gtp5g`](https://github.com/ottoblep/nix-5g-frameworks)
-- Replace step 1.2 with `virtualisation.docker.enable = true;` and 
-- Replace step 2.1 and 2.2 with [srsRAN package](https://github.com/NixOS/nixpkgs/blob/nixos-23.11/pkgs/applications/radio/srsran/default.nix)
