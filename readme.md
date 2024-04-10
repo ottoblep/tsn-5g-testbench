@@ -21,7 +21,9 @@ apt install git make gcc docker docker-compose-plugin
 git submodule update --init --recursive
 ```
 
-### 1. Free5GC Setup according to the [free5gc docker compose guide](https://free5gc.org/guide/0-compose/)
+### 1. Install free5gc and srsRAN
+A top level docker-compose file imports the docker setups for free5gc and srsRAN gNB.
+The git submodules in this repo track specific configuration changes as patches.
 
 #### 1.1. Compile and install [GTP5G Kernel Module](https://github.com/free5gc/gtp5g) on host machine
 ```bash
@@ -32,27 +34,16 @@ modprobe gtp5g
 cd ..
 ```
 
-#### 1.2. Pull free5gc images 
 ```bash
-cd free5gc-compose
 docker compose pull
-cd ..
-```
-
-### 2. srsRAN docker setup 
-
-#### 2.1. Pull docker images
-```bash
-cd srsRAN_Project/docker
-docker compose pull
-# Some containers may need to be built from source (follow the recommendation in the output)
-cd ../..
 ```
 
 ### 3. Running
 
-#### 3.1. Run free5gc (Read logs with `docker logs smf/amp/upf/...`)
+#### 3.1. Run all (Read logs with `docker logs`)
 ```bash
-cd free5gc-compose
 docker compose up
 ```
+
+## Further reading
+https://github.com/s5uishida/free5gc_srsran_sample_config

@@ -1,0 +1,3 @@
+include:
+  - free5gc-compose/docker-compose.yaml
+  - srsRAN_Project/docker/docker-compose.yml
