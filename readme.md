@@ -20,17 +20,15 @@ apt install git docker docker-compose-plugin
 git submodule update --init --recursive
 ```
 
-### 1. Install free5gc and OAI
-A top level docker-compose file imports the docker setups for free5gc and OAI gNB.
-The git submodules in this repo track specific configuration changes as patches.
+### 1. Pull container images 
 
 ```bash
 docker compose pull
 ```
 
-### 3. Running
+### 2. Running
 
-#### 3.1. Run all (Read logs with `docker logs`)
+#### 2.1. Run all (Read logs with `docker logs`)
 ```bash
 docker compose up
 ```
