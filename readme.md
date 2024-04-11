@@ -32,3 +32,8 @@ docker compose pull
 ```bash
 docker compose up
 ```
+
+### 3. Register UE
+#### 3.1 Go to the free5gc webui at `localhost:5000`
+#### 3.2 Create a new subscriber with the imsi specified in the config files.
+#### 3.3 Restart all containers
