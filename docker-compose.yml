@@ -58,6 +58,7 @@ services:
       GIN_MODE: release
     networks:
       privnet:
+        ipv4_address: 10.100.200.131
         aliases:
           - amf.free5gc.org
     depends_on:
