@@ -4,16 +4,15 @@ A software emulated 5G-TSN bridge system.
 
 ## Components
 
-- **UE** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g)
-- **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g)
+- **UE** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with L1 Simulator
+- **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with L1 Simulator
 - **CN** [Free5GC](https://github.com/free5gc/free5gc)
 
 ## Manual Setup
-Package versions matching Ubuntu Jammy
 
-#### 0.1 Install Dependencies
+#### 0.1 Install Docker
 ```bash
-apt install git make gcc docker docker-compose-plugin
+apt install git docker docker-compose-plugin
 ```
 
 #### 0.2 Clone this repo and pull submodules
