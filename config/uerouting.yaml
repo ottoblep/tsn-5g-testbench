@@ -5,7 +5,7 @@ info:
 ueRoutingInfo: # the list of UE routing information
   UE1: # Group Name
     members:
-    - imsi-208990100001100 # Subscription Permanent Identifier of the UE
+    - imsi-208930000000001 # Subscription Permanent Identifier of the UE
     topology: # Network topology for this group (Uplink: A->B, Downlink: B->A)
     # default path derived from this topology
     # node name should be consistent with smfcfg.yaml
