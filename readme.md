@@ -8,6 +8,14 @@ A software emulated 5G-TSN bridge system.
 - **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with L1 Simulator
 - **CN** [Free5GC](https://github.com/free5gc/free5gc)
 
+## Progress
+- **5GS** 
+    - [x] UE-gNB-CN Communication 
+    - [x] UE Authentication
+    - [ ] UE Context setup *fails due to missing 5GMM field*
+- **TSN** 
+    - [ ] Minimal Implementation 
+
 ## Manual Setup
 
 #### 0.1 Install Docker
