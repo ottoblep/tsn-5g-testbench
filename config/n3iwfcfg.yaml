@@ -20,9 +20,6 @@ configuration:
               - SNSSAI: # Single Network Slice Selection Assistance Information
                   SST: 1 # Slice/Service Type (1 byte hex string, range: 0~F)
                   SD: 010203 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
-              - SNSSAI: # Single Network Slice Selection Assistance Information
-                  SST: 1 # Slice/Service Type (1 byte hex string, range: 0~F)
-                  SD: 112233 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
 
   # --- N2 Interfaces ---
   AMFSCTPAddresses: # the IP list of N2 interfaces (SCTP) on AMF when using NGAP
