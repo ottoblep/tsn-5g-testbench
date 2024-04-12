@@ -12,11 +12,12 @@ A software emulated 5G-TSN bridge system.
 - **5GS** 
     - [x] UE-gNB-CN Communication 
     - [x] UE Authentication
-    - [ ] UE Context setup *fails due to missing 5GMM field*
+    - [x] UE Context setup 
+    - [ ] Transmit data
 - **TSN** 
     - [ ] Minimal Implementation 
 
-## Manual Setup
+## Setup
 
 #### 0.1 Install Docker
 ```bash
@@ -28,8 +29,23 @@ apt install git docker docker-compose-plugin
 git submodule update --init --recursive
 ```
 
-### 1. Pull container images 
+### 1. Building 
 
+#### 1.2 Apply patches
+```bash
+git apply ./patches/openairinterface5g/enable_fgmmcapability.patch --directory=openairinterface5g
+```
+
+#### 1.2 Build custom image for OAI-UE (more information [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/tree/master/docker))
+```bash
+cd openairinterface5g
+docker build --target ran-base --tag ran-base:latest --file docker/Dockerfile.base.rocky .
+docker build --target ran-build --tag ran-build:latest --file docker/Dockerfile.build.rocky .
+docker build --target oai-nr-ue --tag oai-nr-ue:develop --file docker/Dockerfile.nrUE.rocky .
+cd ..
+```
+
+#### 1.3 Pull Free5GC and OAI gNB images
 ```bash
 docker compose pull
 ```
