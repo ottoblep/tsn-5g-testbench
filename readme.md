@@ -13,7 +13,7 @@ A software emulated 5G-TSN bridge system.
     - [x] UE-gNB-CN Communication 
     - [x] UE Authentication
     - [x] UE Context setup 
-    - [ ] Transmit data
+    - [ ] PDU Session Establishment *NSSAI parameters not match with allowed NSSAI*.
 - **TSN** 
     - [ ] Minimal Implementation 
 
