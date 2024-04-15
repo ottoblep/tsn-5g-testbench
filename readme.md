@@ -29,6 +29,14 @@ apt install git docker docker-compose-plugin
 git submodule update --init --recursive
 ```
 
+#### 0.3 Install [kernel module for GTP](https://github.com/free5gc/gtp5g)
+```bash
+cd gtp5g
+make clean && make
+make install
+cd ..
+```
+
 ### 1. Building 
 
 #### 1.2 Apply patches

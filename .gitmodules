@@ -4,3 +4,6 @@
 [submodule "openairinterface5g"]
 	path = openairinterface5g
 	url = https://gitlab.eurecom.fr/oai/openairinterface5g.git
+[submodule "gtp5g"]
+	path = gtp5g
+	url = https://github.com/free5gc/gtp5g
