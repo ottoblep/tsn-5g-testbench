@@ -14,6 +14,7 @@ A software emulated 5G-TSN bridge system.
     - [x] UE Authentication
     - [x] UE Context setup 
     - [x] PDU Session Establishment
+    - [ ] IP Routing
 - **TSN** 
     - [ ] Minimal Implementation 
 
