@@ -10,14 +10,14 @@ ueRoutingInfo: # the list of UE routing information
     # default path derived from this topology
     # node name should be consistent with smfcfg.yaml
       - A: gNB1
-        B: BranchingUPF
-      - A: BranchingUPF
-        B: AnchorUPF1
+        B: UPF
+      - B: UPF
+        A: gNB1
     specificPath:
       - dest: 10.60.0.103/32 # the destination IP address on Data Network (DN)
         # the order of UPF nodes in this path. We use the UPF's name to represent each UPF node.
         # The UPF's name should be consistent with smfcfg.yaml
-        path: [BranchingUPF, AnchorUPF2]
+        path: [UPF]
 
 routeProfile: # Maintains the mapping between RouteProfileID and ForwardingPolicyID of UPF
   MEC1: # Route Profile identifier
