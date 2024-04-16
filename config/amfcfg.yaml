@@ -54,14 +54,14 @@ configuration:
     short: free
   ngapIE: # Optional NGAP IEs
     mobilityRestrictionList: # Mobility Restriction List IE, refer to TS 38.413
-      enable: true # append this IE in related message or not
+      enable: false # append this IE in related message or not
     maskedIMEISV: # Masked IMEISV IE, refer to TS 38.413
-      enable: true # append this IE in related message or not
+      enable: false # append this IE in related message or not
     redirectionVoiceFallback: # Redirection Voice Fallback IE, refer to TS 38.413
       enable: false # append this IE in related message or not
   nasIE: # Optional NAS IEs
     networkFeatureSupport5GS: # 5gs Network Feature Support IE, refer to TS 24.501
-      enable: true # append this IE in Registration accept or not
+      enable: false # append this IE in Registration accept or not
       length: 1 # IE content length (uinteger, range: 1~3)
       imsVoPS: 0 # IMS voice over PS session indicator (uinteger, range: 0~1)
       emc: 0 # Emergency service support indicator for 3GPP access (uinteger, range: 0~3)
