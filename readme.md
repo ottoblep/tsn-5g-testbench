@@ -4,8 +4,8 @@ A software emulated 5G-TSN bridge system.
 
 ## Components
 
-- **UE** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with L1 Simulator
-- **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with L1 Simulator
+- **UE** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with RF Simulator
+- **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with RF Simulator
 - **CN** [Free5GC](https://github.com/free5gc/free5gc)
 
 ## Progress
