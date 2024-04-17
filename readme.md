@@ -14,7 +14,7 @@ A software emulated 5G-TSN bridge system.
     - [x] UE Authentication
     - [x] UE Context setup 
     - [x] PDU Session Establishment
-    - [ ] IP Communication *PDU Session Establishment Accept is not handled by UE, Unknown message type 84*
+    - [ ] IP Communication *GNB does not forward PDU Session Establishment Accept to UE*
 - **TSN** 
     - [ ] Minimal Implementation 
 
