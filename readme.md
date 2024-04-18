@@ -3,6 +3,7 @@
 A software emulated 5G-TSN bridge system.
 
 ## Components
+[Diagram](./docs/structure.drawio.pdf)
 
 - **UE** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with RF Simulator
 - **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with RF Simulator
