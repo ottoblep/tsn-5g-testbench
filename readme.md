@@ -53,9 +53,9 @@ git apply ./patches/openairinterface5g/skip_unknown_ie.patch --directory=openair
 #### 1.2 Build custom image for OAI-UE (more information [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/tree/master/docker))
 ```bash
 cd openairinterface5g
-docker build --target ran-base --tag ran-base:latest --file docker/Dockerfile.base.rocky .
-docker build --target ran-build --tag ran-build:latest --file docker/Dockerfile.build.rocky .
-docker build --target oai-nr-ue --tag oai-nr-ue:develop --file docker/Dockerfile.nrUE.rocky .
+docker build --target ran-base --tag ran-base:latest --file docker/Dockerfile.base.ubuntu20 .
+docker build --target ran-build --tag ran-build:latest --file docker/Dockerfile.build.ubuntu20 .
+docker build --target oai-nr-ue --tag oai-nr-ue:develop --file docker/Dockerfile.nrUE.ubuntu20 .
 cd ..
 ```
 
