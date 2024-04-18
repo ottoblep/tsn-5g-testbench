@@ -16,7 +16,9 @@ A software emulated 5G-TSN bridge system.
     - [x] PDU Session Establishment
     - [x] IP Traffic
 - **TSN** 
-    - [ ] Minimal Implementation 
+    - [ ] External TSN traffic simulation
+    - [ ] DS-TT and NW-TT 
+    - [ ] TSN AF
 
 ## Setup
 
