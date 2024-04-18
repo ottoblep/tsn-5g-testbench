@@ -77,3 +77,9 @@ docker compose up
 Enter all the parameters specified in `config/nrue.uicc.conf`\
 Leave everything else on default.
 #### 3.3 Restart all containers
+
+## Development
+
+To simplify dealing with the different ecosystems of OAI and Free5GC on our host machine we can develop applications directly inside the provided containers.
+An example is the VSCode extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+It lets you seamlessly step into any container environment.
