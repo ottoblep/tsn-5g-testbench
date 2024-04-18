@@ -14,7 +14,7 @@ A software emulated 5G-TSN bridge system.
     - [x] UE Authentication
     - [x] UE Context setup 
     - [x] PDU Session Establishment
-    - [ ] IP Communication *GNB does not forward PDU Session Establishment Accept to UE*
+    - [x] IP Traffic
 - **TSN** 
     - [ ] Minimal Implementation 
 
@@ -42,7 +42,10 @@ cd ..
 
 #### 1.2 Apply patches
 ```bash
+# This send the 5g mobility management capability field during UE registration, which free5gc requires
 git apply ./patches/openairinterface5g/enable_fgmmcapability.patch --directory=openairinterface5g
+# This is a dirty fix to skip unknown fields in the PDU establishment accept message, otherwise the UE aborts parsing the message
+git apply ./patches/openairinterface5g/skip_unknown_ie.patch --directory=openairinterface5g
 ```
 
 #### 1.2 Build custom image for OAI-UE (more information [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/tree/master/docker))
