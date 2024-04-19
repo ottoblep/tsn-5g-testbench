@@ -257,6 +257,20 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+
+  ptp-master:
+    container_name: ptp-master 
+    networks:
+      privnet:
+        ipv4_address: 10.100.200.210
+        aliases:
+          - ptpmaster.org
+    build:
+      context: ./docker/ptpmaster
+    # depends_on:
+    #     - oai-gnb
+    #     - oai-nr-ue
+    #     - upf
     
 networks:
   privnet:
