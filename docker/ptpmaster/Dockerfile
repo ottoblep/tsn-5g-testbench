@@ -1,4 +1,3 @@
-FROM alpine:3.19.1
+FROM n0madic/alpine-gcc:7.5.0
 COPY ./src /src
-RUN apk add make build-base
 RUN make -f /src/Makefile
