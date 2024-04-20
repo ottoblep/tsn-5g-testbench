@@ -210,10 +210,10 @@ services:
     cap_add:
       - NET_ADMIN
     networks:
-      cn-bridge:
+      cn-bridge: # eth0
         aliases:
           - upf.free5gc.org
-      tsn-bridge-in:
+      tsn-bridge-in: # eth1
         ipv4_address: 10.100.201.100
 
   oai-gnb:
