@@ -7,5 +7,7 @@ RUN apt-get update && \
        python3-pip && \
     pip3 install --ignore-installed pyyaml
 RUN git clone -b dev https://github.com/bestvibes/IEEE1588-PTP /bestvibes-ptp
+COPY ./set_ptp_slave_ip.patch /bestvibes-ptp/set_ptp_slave_ip.patch
 WORKDIR /bestvibes-ptp
+RUN git apply set_ptp_slave_ip.patch
 RUN make master_c slave_c

@@ -3,23 +3,29 @@ version: '3.8'
 services:
   ptp-master:
     container_name: ptp-master 
+    entrypoint: /bestvibes-ptp/master/master.out
     networks:
       privnet:
         ipv4_address: 10.100.200.210
         aliases:
-          - ptpmaster.org
+          - master.ptp.org
     build:
       context: ./
+    expose:
+      - "2468"
 
   ptp-slave:
     container_name: ptp-slave 
+    entrypoint: /bestvibes-ptp/slave/slave.out
     networks:
       privnet:
         ipv4_address: 10.100.200.220
         aliases:
-          - ptpmaster.org
+          - slave.ptp.org
     build:
       context: ./
+    expose:
+      - "2468"
     
 networks:
   privnet:
