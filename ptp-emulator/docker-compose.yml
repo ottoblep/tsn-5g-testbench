@@ -1,3 +1,5 @@
+# This dockerfile is for testing only the ptp service
+# These containers are also included in the main docker-compose.yml
 version: '3.8'
 
 services:

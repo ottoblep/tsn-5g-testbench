@@ -1,20 +1,6 @@
 version: '3.8'
 
 services:
-  free5gc-upf:
-    container_name: upf
-    image: free5gc/upf:v3.4.1
-    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
-    volumes:
-      - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
-    cap_add:
-      - NET_ADMIN
-    networks:
-      privnet:
-        aliases:
-          - upf.free5gc.org
-
   db:
     container_name: mongodb
     image: mongo
@@ -24,7 +10,7 @@ services:
     volumes:
       - dbdata:/data/db
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - db
 
@@ -40,7 +26,7 @@ services:
       DB_URI: mongodb://db/free5gc
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - nrf.free5gc.org
     depends_on:
@@ -57,7 +43,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         ipv4_address: 10.100.200.131
         aliases:
           - amf.free5gc.org
@@ -75,7 +61,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - ausf.free5gc.org
     depends_on:
@@ -92,7 +78,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - nssf.free5gc.org
     depends_on:
@@ -109,7 +95,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - pcf.free5gc.org
     depends_on:
@@ -127,7 +113,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - smf.free5gc.org
     depends_on:
@@ -145,7 +131,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - udm.free5gc.org
     depends_on:
@@ -164,7 +150,7 @@ services:
       DB_URI: mongodb://db/free5gc
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - udr.free5gc.org
     depends_on:
@@ -183,7 +169,7 @@ services:
       DB_URI: mongodb://db/free5gc
       GIN_MODE: release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - chf.free5gc.org
     depends_on:
@@ -203,7 +189,7 @@ services:
     environment:
       - GIN_MODE=release
     networks:
-      privnet:
+      cn-bridge:
         aliases:
           - webui
     ports:
@@ -213,6 +199,22 @@ services:
     depends_on:
       - db
       - free5gc-nrf
+
+  free5gc-upf:
+    container_name: upf
+    image: free5gc/upf:v3.4.1
+    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
+    volumes:
+      - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
+      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
+    cap_add:
+      - NET_ADMIN
+    networks:
+      cn-bridge:
+        aliases:
+          - upf.free5gc.org
+      tsn-bridge-in:
+        ipv4_address: 10.100.201.100
 
   oai-gnb:
     image: oaisoftwarealliance/oai-gnb:develop
@@ -225,10 +227,8 @@ services:
       - free5gc-amf
       - free5gc-upf
     networks:
-      privnet:
+      cn-bridge:
         ipv4_address: 10.100.200.140
-        aliases:
-          - gnb.oai.org
     volumes:
         - ./config/gnb.sa.band78.106prb.rfsim.conf:/opt/oai-gnb/etc/gnb.conf
     healthcheck:
@@ -246,10 +246,10 @@ services:
     depends_on:
         - oai-gnb
     networks:
-      privnet:
+      cn-bridge:
         ipv4_address: 10.100.200.150
-        aliases:
-          - ue.oai.org
+      tsn-bridge-out:
+        ipv4_address: 10.100.202.100
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
     healthcheck:
@@ -257,15 +257,53 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+
+  ptp-master:
+    container_name: ptp-master 
+    entrypoint: /bestvibes-ptp/master/master.out
+    networks:
+      tsn-bridge-in:
+        ipv4_address: 10.100.201.200
+    build:
+      context: ./ptp-emulator
+    expose:
+      - "2468"
+
+  ptp-slave:
+    container_name: ptp-slave 
+    entrypoint: /bestvibes-ptp/slave/slave.out
+    networks:
+      tsn-bridge-out:
+        ipv4_address: 10.100.202.200
+    build:
+      context: ./ptp-emulator
+    expose:
+      - "2468"
     
 networks:
-  privnet:
+  cn-bridge:
     ipam:
       driver: default
       config:
         - subnet: 10.100.200.0/24
     driver_opts:
       com.docker.network.bridge.name: br-free5gc
+
+  tsn-bridge-in: # Base Station Side
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.100.201.0/24
+    driver_opts:
+      com.docker.network.bridge.name: tsn-br-in 
+
+  tsn-bridge-out: # UE Side
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.100.202.0/24
+    driver_opts:
+      com.docker.network.bridge.name: tsn-br-out
 
 volumes:
   dbdata:
