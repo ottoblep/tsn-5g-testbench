@@ -78,6 +78,7 @@ docker compose up
 
 ### 3. Register UE
 #### 3.1 Go to the free5gc webui at `localhost:5000`
+Login with user `admin` and password `free5gc`
 #### 3.2 Create a new subscriber
 Enter all the parameters specified in `config/nrue.uicc.conf`\
 Leave everything else on default.
