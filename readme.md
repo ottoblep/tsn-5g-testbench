@@ -87,6 +87,24 @@ Login with user `admin` and password `free5gc`
 - Leave everything else on default.
 #### 3.3 Restart all containers
 
+### 4. Test Connection
+Log into the UE
+```bash
+docker exec -it oai-nr-ue bash
+```
+Test connection to UPF
+```bash
+ping -I oaitun_ue1 upf.free5gc.org
+```
+Log into the UPF
+```bash
+docker exec -it upf bash
+```
+Test connection to UE
+```bash
+ping 10.60.0.1 
+```
+
 ## Development
 
 To simplify dealing with the different ecosystems of OAI and Free5GC on our host machine we can develop applications directly inside the provided containers.
