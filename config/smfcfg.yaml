@@ -49,7 +49,7 @@ configuration:
             dnnUpfInfoList: # DNN information list for this S-NSSAI
               - dnn: internet
                 pools:
-                  - cidr: 10.60.0.0/16
+                  - cidr: 10.60.0.0/24
                 staticPools:
                   - cidr: 10.60.100.0/24
         interfaces: # Interface list for this UPF
