@@ -10,7 +10,7 @@ services:
     volumes:
       - dbdata:/data/db
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - db
 
@@ -26,7 +26,7 @@ services:
       DB_URI: mongodb://db/free5gc
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - nrf.free5gc.org
     depends_on:
@@ -43,7 +43,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         ipv4_address: 10.100.200.131
         aliases:
           - amf.free5gc.org
@@ -61,7 +61,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - ausf.free5gc.org
     depends_on:
@@ -78,7 +78,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - nssf.free5gc.org
     depends_on:
@@ -95,7 +95,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - pcf.free5gc.org
     depends_on:
@@ -113,7 +113,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - smf.free5gc.org
     depends_on:
@@ -131,7 +131,7 @@ services:
     environment:
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - udm.free5gc.org
     depends_on:
@@ -150,7 +150,7 @@ services:
       DB_URI: mongodb://db/free5gc
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - udr.free5gc.org
     depends_on:
@@ -169,7 +169,7 @@ services:
       DB_URI: mongodb://db/free5gc
       GIN_MODE: release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - chf.free5gc.org
     depends_on:
@@ -189,7 +189,7 @@ services:
     environment:
       - GIN_MODE=release
     networks:
-      cn-bridge:
+      5gs-bridge:
         aliases:
           - webui
     ports:
@@ -207,14 +207,14 @@ services:
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
       - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
-    cap_add:
-      - NET_ADMIN
     networks:
-      cn-bridge: # eth0
+      5gs-bridge: # eth0
         aliases:
           - upf.free5gc.org
       tsn-bridge-in: # eth1
         ipv4_address: 10.100.201.100
+    cap_add:
+      - NET_ADMIN
 
   oai-gnb:
     image: oaisoftwarealliance/oai-gnb:develop
@@ -227,8 +227,10 @@ services:
       - free5gc-amf
       - free5gc-upf
     networks:
-      cn-bridge:
+      5gs-bridge:
         ipv4_address: 10.100.200.140
+    cap_add:
+      - NET_ADMIN
     volumes:
         - ./config/gnb.sa.band78.106prb.rfsim.conf:/opt/oai-gnb/etc/gnb.conf
     healthcheck:
@@ -246,10 +248,12 @@ services:
     depends_on:
         - oai-gnb
     networks:
-      cn-bridge:
+      5gs-bridge:
         ipv4_address: 10.100.200.150
       tsn-bridge-out:
         ipv4_address: 10.100.202.100
+    cap_add:
+      - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
     healthcheck:
@@ -264,6 +268,8 @@ services:
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
+    cap_add:
+      - NET_ADMIN
     build:
       context: ./ptp-emulator
     expose:
@@ -275,13 +281,15 @@ services:
     networks:
       tsn-bridge-out:
         ipv4_address: 10.100.202.200
+    cap_add:
+      - NET_ADMIN
     build:
       context: ./ptp-emulator
     expose:
       - "2468"
     
 networks:
-  cn-bridge:
+  5gs-bridge:
     ipam:
       driver: default
       config:
