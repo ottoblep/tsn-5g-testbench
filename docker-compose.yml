@@ -298,7 +298,7 @@ networks:
       config:
         - subnet: 10.100.200.0/24
     driver_opts:
-      com.docker.network.bridge.name: br-free5gc
+      com.docker.network.bridge.name: 5gs-br
 
   tsn-bridge-in: # Base Station Side
     ipam:
