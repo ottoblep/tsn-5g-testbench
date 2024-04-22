@@ -80,8 +80,11 @@ docker compose up
 #### 3.1 Go to the free5gc webui at `localhost:5000`
 Login with user `admin` and password `free5gc`
 #### 3.2 Create a new subscriber
-Enter all the parameters specified in `config/nrue.uicc.conf`\
-Leave everything else on default.
+- Compare all the parameters specified to `config/nrue.uicc.conf`.
+    Many of the fields should already match since we chose the default.
+- Delete all flow rules.
+- Delete the second S-NSSAI configuration. We will use only one network with SD `010203`.
+- Leave everything else on default.
 #### 3.3 Restart all containers
 
 ## Development
