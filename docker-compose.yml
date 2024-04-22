@@ -264,7 +264,10 @@ services:
 
   ptp-master:
     container_name: ptp-master 
-    entrypoint: /bestvibes-ptp/master/master.out
+    entrypoint: /bin/bash -c \
+          "ip route add 10.60.0.0/24 via 10.100.201.100 dev eth0;
+          /bestvibes-ptp/master/master.out;
+          sleep infinity"
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
