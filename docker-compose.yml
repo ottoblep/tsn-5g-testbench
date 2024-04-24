@@ -212,7 +212,7 @@ services:
     command: bash -c "./iptables.sh && ./upf -c ./config/upfcfg.yaml"
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/iptables.sh:/free5gc/iptables.sh
+      - ./config/iptables-upf.sh:/free5gc/iptables.sh
     networks:
       5gs-bridge: # eth0
         ipv4_address: 10.100.200.137
@@ -247,7 +247,9 @@ services:
   oai-nr-ue:
     image: oai-nr-ue:develop
     privileged: true
-    container_name: oai-nr-ue
+    command: /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+    entrypoint: /tini -v -- /opt/oai-nr-ue/bin/entrypoint.sh
+    # /opt/oai-nr-ue/bin/iptables.sh # TODO: Needs to be manually executed
     environment:
         USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000001 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
     depends_on:
@@ -261,7 +263,7 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
-        - ./config/iptables.sh:/opt/oai-nr-ue/iptables.sh
+        - ./config/iptables-ue.sh:/opt/oai-nr-ue/bin/iptables.sh
     healthcheck:
         test: /bin/bash -c "pgrep nr-uesoftmodem"
         interval: 10s
