@@ -14,24 +14,6 @@ services:
         aliases:
           - db
 
-  free5gc-nrf:
-    container_name: nrf
-    image: free5gc/nrf:v3.4.1
-    command: ./nrf -c ./config/nrfcfg.yaml
-    expose:
-      - "8000"
-    volumes:
-      - ./config/nrfcfg.yaml:/free5gc/config/nrfcfg.yaml
-    environment:
-      DB_URI: mongodb://db/free5gc
-      GIN_MODE: release
-    networks:
-      5gs-bridge:
-        aliases:
-          - nrf.free5gc.org
-    depends_on:
-      - db
-
   free5gc-amf:
     container_name: amf
     image: free5gc/amf:v3.4.1
@@ -50,6 +32,25 @@ services:
     depends_on:
       - free5gc-nrf
 
+  free5gc-nrf:
+    container_name: nrf
+    image: free5gc/nrf:v3.4.1
+    command: ./nrf -c ./config/nrfcfg.yaml
+    expose:
+      - "8000"
+    volumes:
+      - ./config/nrfcfg.yaml:/free5gc/config/nrfcfg.yaml
+    environment:
+      DB_URI: mongodb://db/free5gc
+      GIN_MODE: release
+    networks:
+      5gs-bridge:
+        ipv4_address: 10.100.200.132
+        aliases:
+          - nrf.free5gc.org
+    depends_on:
+      - db
+
   free5gc-ausf:
     container_name: ausf
     image: free5gc/ausf:v3.4.1
@@ -62,6 +63,7 @@ services:
       GIN_MODE: release
     networks:
       5gs-bridge:
+        ipv4_address: 10.100.200.133
         aliases:
           - ausf.free5gc.org
     depends_on:
@@ -79,6 +81,7 @@ services:
       GIN_MODE: release
     networks:
       5gs-bridge:
+        ipv4_address: 10.100.200.134
         aliases:
           - nssf.free5gc.org
     depends_on:
@@ -96,6 +99,7 @@ services:
       GIN_MODE: release
     networks:
       5gs-bridge:
+        ipv4_address: 10.100.200.135
         aliases:
           - pcf.free5gc.org
     depends_on:
@@ -114,6 +118,7 @@ services:
       GIN_MODE: release
     networks:
       5gs-bridge:
+        ipv4_address: 10.100.200.136
         aliases:
           - smf.free5gc.org
     depends_on:
@@ -202,19 +207,19 @@ services:
 
   free5gc-upf:
     container_name: upf
+    privileged: true # Required to disable reverse path filtering
     image: free5gc/upf:v3.4.1
-    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
+    command: bash -c "./iptables.sh && ./upf -c ./config/upfcfg.yaml"
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
+      - ./config/iptables.sh:/free5gc/iptables.sh
     networks:
       5gs-bridge: # eth0
+        ipv4_address: 10.100.200.137
         aliases:
           - upf.free5gc.org
       tsn-bridge-in: # eth1
         ipv4_address: 10.100.201.100
-    cap_add:
-      - NET_ADMIN
 
   oai-gnb:
     image: oaisoftwarealliance/oai-gnb:develop
@@ -256,13 +261,15 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+        - ./config/iptables.sh:/opt/oai-nr-ue/iptables.sh
     healthcheck:
         test: /bin/bash -c "pgrep nr-uesoftmodem"
         interval: 10s
         timeout: 5s
         retries: 5
 
-  ptp-master:
+  ptp-master: # Base Station Side
+    privileged: true # Required to disable reverse path filtering
     container_name: ptp-master 
     entrypoint: /bin/bash -c \
           "ip route add 10.60.0.0/24 via 10.100.201.100 dev eth0;
@@ -278,7 +285,7 @@ services:
     expose:
       - "2468"
 
-  ptp-slave:
+  ptp-slave: # UE Side
     container_name: ptp-slave 
     entrypoint: /bestvibes-ptp/slave/slave.out
     networks:

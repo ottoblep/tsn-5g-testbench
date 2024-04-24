@@ -1,0 +1,14 @@
+diff --git a/docker/Dockerfile.nrUE.ubuntu20 b/docker/Dockerfile.nrUE.ubuntu20
+index dfbd5f93e6..5564767899 100644
+--- a/docker/Dockerfile.nrUE.ubuntu20
++++ b/docker/Dockerfile.nrUE.ubuntu20
+@@ -65,7 +65,8 @@ RUN apt-get update && \
+         iputils-ping \
+         iproute2 \
+         iperf3 \
+-        iperf && \
++        iperf \
++        iptables && \
+ # if the --sanitize option was used to build, additional packages are required
+     /bin/bash -c 'if [[ "$BUILD_OPTION" = "--sanitize" ]]; then DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+         libasan5 \
