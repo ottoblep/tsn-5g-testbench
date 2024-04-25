@@ -207,7 +207,7 @@ services:
 
   free5gc-upf:
     container_name: upf
-    privileged: true # Required to disable reverse path filtering
+    privileged: true
     image: free5gc/upf:v3.4.1
     command: bash -c "./iptables.sh && ./upf -c ./config/upfcfg.yaml"
     volumes:
@@ -272,7 +272,6 @@ services:
         retries: 5
 
   ptp-master: # Base Station Side
-    privileged: true # Required to disable reverse path filtering
     container_name: ptp-master 
     entrypoint: /bin/bash -c \
           "ip route add 10.60.0.0/24 via 10.100.201.100 dev eth0;
@@ -289,7 +288,6 @@ services:
       - "2468"
 
   ptp-slave: # UE Side
-    privileged: true # Required to disable reverse path filtering
     container_name: ptp-slave 
     entrypoint: /bestvibes-ptp/slave/slave.out
     networks:
