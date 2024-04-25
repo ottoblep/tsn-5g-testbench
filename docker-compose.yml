@@ -247,6 +247,7 @@ services:
   oai-nr-ue:
     image: oai-nr-ue:develop
     privileged: true
+    container_name: oai-nr-ue
     command: /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
     entrypoint: /tini -v -- /opt/oai-nr-ue/bin/entrypoint.sh
     # /opt/oai-nr-ue/bin/iptables.sh # TODO: Needs to be manually executed
@@ -288,6 +289,7 @@ services:
       - "2468"
 
   ptp-slave: # UE Side
+    privileged: true # Required to disable reverse path filtering
     container_name: ptp-slave 
     entrypoint: /bestvibes-ptp/slave/slave.out
     networks:
@@ -310,16 +312,16 @@ networks:
       com.docker.network.bridge.name: 5gs-br
 
   tsn-bridge-in: # Base Station Side
+    driver: macvlan
     ipam:
-      driver: default
       config:
         - subnet: 10.100.201.0/24
     driver_opts:
       com.docker.network.bridge.name: tsn-br-in 
 
   tsn-bridge-out: # UE Side
+    driver: macvlan
     ipam:
-      driver: default
       config:
         - subnet: 10.100.202.0/24
     driver_opts:
