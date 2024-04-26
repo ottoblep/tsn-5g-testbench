@@ -18,7 +18,7 @@ A software emulated 5G-TSN bridge system.
     - [x] IP Traffic
 - **TSN** 
     - [ ] Transparent Clock
-        - [ ] External PTP traffic simulation
+        - [x] External PTP traffic simulation
         - [ ] DS-TT and NW-TT 
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
