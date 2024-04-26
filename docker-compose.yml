@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   db:
+    profiles: ["5gs"]
     container_name: mongodb
     image: mongo
     command: mongod --port 27017
@@ -15,6 +16,7 @@ services:
           - db
 
   free5gc-amf:
+    profiles: ["5gs"]
     container_name: amf
     image: free5gc/amf:v3.4.1
     command: ./amf -c ./config/amfcfg.yaml
@@ -33,6 +35,7 @@ services:
       - free5gc-nrf
 
   free5gc-nrf:
+    profiles: ["5gs"]
     container_name: nrf
     image: free5gc/nrf:v3.4.1
     command: ./nrf -c ./config/nrfcfg.yaml
@@ -52,6 +55,7 @@ services:
       - db
 
   free5gc-ausf:
+    profiles: ["5gs"]
     container_name: ausf
     image: free5gc/ausf:v3.4.1
     command: ./ausf -c ./config/ausfcfg.yaml
@@ -70,6 +74,7 @@ services:
       - free5gc-nrf
 
   free5gc-nssf:
+    profiles: ["5gs"]
     container_name: nssf
     image: free5gc/nssf:v3.4.1
     command: ./nssf -c ./config/nssfcfg.yaml
@@ -88,6 +93,7 @@ services:
       - free5gc-nrf
 
   free5gc-pcf:
+    profiles: ["5gs"]
     container_name: pcf
     image: free5gc/pcf:v3.4.1
     command: ./pcf -c ./config/pcfcfg.yaml
@@ -106,6 +112,7 @@ services:
       - free5gc-nrf
 
   free5gc-smf:
+    profiles: ["5gs"]
     container_name: smf
     image: free5gc/smf:v3.4.1
     command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
@@ -126,6 +133,7 @@ services:
       - free5gc-upf
 
   free5gc-udm:
+    profiles: ["5gs"]
     container_name: udm
     image: free5gc/udm:v3.4.1
     command: ./udm -c ./config/udmcfg.yaml
@@ -144,6 +152,7 @@ services:
       - free5gc-nrf
 
   free5gc-udr:
+    profiles: ["5gs"]
     container_name: udr
     image: free5gc/udr:v3.4.1
     command: ./udr -c ./config/udrcfg.yaml
@@ -163,6 +172,7 @@ services:
       - free5gc-nrf
 
   free5gc-chf:
+    profiles: ["5gs"]
     container_name: chf
     image: free5gc/chf:v3.4.1
     command: ./chf -c ./config/chfcfg.yaml
@@ -183,6 +193,7 @@ services:
       - free5gc-webui
 
   free5gc-webui:
+    profiles: ["5gs"]
     container_name: webui
     image: free5gc/webui:v3.4.1
     command: ./webui -c ./config/webuicfg.yaml
@@ -206,13 +217,13 @@ services:
       - free5gc-nrf
 
   free5gc-upf:
+    profiles: ["5gs"]
     container_name: upf
     privileged: true
     image: free5gc/upf:v3.4.1
-    command: bash -c "./iptables.sh && ./upf -c ./config/upfcfg.yaml"
+    command: ./upf -c ./config/upfcfg.yaml
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/iptables-upf.sh:/free5gc/iptables.sh
     networks:
       5gs-bridge: # eth0
         ipv4_address: 10.100.200.137
@@ -222,6 +233,7 @@ services:
         ipv4_address: 10.100.201.100
 
   oai-gnb:
+    profiles: ["5gs"]
     image: oaisoftwarealliance/oai-gnb:develop
     privileged: true
     container_name: oai-gnb
@@ -245,12 +257,12 @@ services:
         retries: 5
 
   oai-nr-ue:
+    profiles: ["5gs"]
     image: oai-nr-ue:develop
     privileged: true
     container_name: oai-nr-ue
     command: /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
     entrypoint: /tini -v -- /opt/oai-nr-ue/bin/entrypoint.sh
-    # /opt/oai-nr-ue/bin/iptables.sh # TODO: Needs to be manually executed
     environment:
         USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000001 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
     depends_on:
@@ -264,7 +276,6 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
-        - ./config/iptables-ue.sh:/opt/oai-nr-ue/bin/iptables.sh
     healthcheck:
         test: /bin/bash -c "pgrep nr-uesoftmodem"
         interval: 10s
@@ -272,9 +283,10 @@ services:
         retries: 5
 
   ptp-master: # Base Station Side
+    profiles: ["ptpsim"]
     container_name: ptp-master 
-    # command: bash -c "while true; do sleep 5; /bestvibes-ptp/master/master.out; done"
-    entrypoint: sleep infinity;
+    entrypoint: sleep infinity
+    # command: bash -c "sleep 20; while true; do sleep 5; timeout 5 /bestvibes-ptp/master/master.out; done"
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
@@ -284,9 +296,10 @@ services:
       context: ./ptp-emulator
 
   ptp-slave: # UE Side
+    profiles: ["ptpsim"]
     container_name: ptp-slave 
-    # command: sleep 3; /bestvibes-ptp/slave/slave.out
-    entrypoint: sleep infinity;
+    entrypoint: sleep infinity
+    # command: bash -c "while true; do /bestvibes-ptp/slave/slave.out; done"
     networks:
       tsn-bridge-out:
         ipv4_address: 10.100.202.200

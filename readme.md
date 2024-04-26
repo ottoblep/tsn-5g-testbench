@@ -50,7 +50,7 @@ modprobe gtp5g
 
 #### 1.2 Apply patches
 ```bash
-# Various patches for
+# Various patches for OAI
 # - Sending the 5g mobility management capability field during UE registration, which free5gc requires
 # - A dirty fix for the UE to skip unknown fields in the PDU establishment accept message, otherwise the UE aborts parsing the message
 # - Add iptables to UE for routing purposes
@@ -67,17 +67,15 @@ docker build --target oai-nr-ue --tag oai-nr-ue:develop --file docker/Dockerfile
 cd ..
 ```
 
-#### 1.3 Pull Free5GC and OAI gNB images
-```bash
-docker compose pull
-```
-
 ### 2. Running
 
 #### 2.1. Run all (Read logs with `docker logs`)
+This will also automatically pull the remaining container images.
 ```bash
-docker compose up
+docker compose --profile 5gs up
 ```
+The registration of the UE will fail since it is not yet registered in the database.\
+Leave the system running for the next step.
 
 ### 3. Register UE
 #### 3.1 Go to the free5gc webui at `localhost:5000`
@@ -91,6 +89,13 @@ Login with user `admin` and password `free5gc`
 #### 3.3 Restart all containers
 
 ### 4. Test Connection
+When the setup was successfull you will find the following in the logs:
+```
+oai-nr-ue  | 6569.638343 [OIP] I Interface oaitun_ue1 successfully configured, ip address 10.60.0.1, mask 255.255.255.0 broadcast address 10.60.0.255
+oai-nr-ue  | PDU SESSION ESTABLISHMENT ACCEPT - Received UE IP: 10.60.0.1
+```
+You can also confirm the IP connection manually.
+
 Log into the UE
 ```bash
 docker exec -it oai-nr-ue bash
@@ -107,6 +112,10 @@ Test connection to UE
 ```bash
 ping 10.60.0.1 
 ```
+
+### 5. Running the PTP Emulation
+Two additional containers will simulate a ptp exchange through the 5gs connection.
+The system can be started with `scripts/launch_ptp_emulation.sh`.
 
 ## Development
 
