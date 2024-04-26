@@ -7,7 +7,7 @@ index ffec686..1799844 100644
  /* USER-DEFINED SETTINGS */
  #define PORT 2468
 -#define SLAVE_IP "127.0.0.1"
-+#define SLAVE_IP "10.100.200.220"
++#define SLAVE_IP "10.60.0.1"
  #define NETMAP_INTERFACE "eth0"
  #define NUM_OF_TIMES 1000  /* num of times to run protocol */
  

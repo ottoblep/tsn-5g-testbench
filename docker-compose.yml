@@ -273,10 +273,8 @@ services:
 
   ptp-master: # Base Station Side
     container_name: ptp-master 
-    entrypoint: /bin/bash -c \
-          "ip route add 10.60.0.0/24 via 10.100.201.100 dev eth0;
-          /bestvibes-ptp/master/master.out;
-          sleep infinity"
+    # command: bash -c "while true; do sleep 5; /bestvibes-ptp/master/master.out; done"
+    entrypoint: sleep infinity;
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
@@ -284,12 +282,11 @@ services:
       - NET_ADMIN
     build:
       context: ./ptp-emulator
-    expose:
-      - "2468"
 
   ptp-slave: # UE Side
     container_name: ptp-slave 
-    entrypoint: /bestvibes-ptp/slave/slave.out
+    # command: sleep 3; /bestvibes-ptp/slave/slave.out
+    entrypoint: sleep infinity;
     networks:
       tsn-bridge-out:
         ipv4_address: 10.100.202.200
