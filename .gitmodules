@@ -1,6 +1,3 @@
-[submodule "free5gc-compose"]
-	path = free5gc-compose
-	url = https://github.com/free5gc/free5gc-compose
 [submodule "openairinterface5g"]
 	path = openairinterface5g
 	url = https://gitlab.eurecom.fr/oai/openairinterface5g.git
