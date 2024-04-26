@@ -69,7 +69,7 @@ cd ..
 
 ### 2. Running
 
-#### 2.1. Run all (Read logs with `docker logs`)
+#### 2.1. Run all
 This will also automatically pull the remaining container images.
 ```bash
 docker compose --profile 5gs up
@@ -94,27 +94,16 @@ When the setup was successfull you will find the following in the logs:
 oai-nr-ue  | 6569.638343 [OIP] I Interface oaitun_ue1 successfully configured, ip address 10.60.0.1, mask 255.255.255.0 broadcast address 10.60.0.255
 oai-nr-ue  | PDU SESSION ESTABLISHMENT ACCEPT - Received UE IP: 10.60.0.1
 ```
-You can also confirm the IP connection manually.
 
-Log into the UE
+Confirm IP connection
 ```bash
-docker exec -it oai-nr-ue bash
-```
-Test connection to UPF
-```bash
-ping -I oaitun_ue1 upf.free5gc.org
-```
-Log into the UPF
-```bash
-docker exec -it upf bash
-```
-Test connection to UE
-```bash
-ping 10.60.0.1 
+docker exec upf apt install -y iputils-ping
+docker exec oai-nr-ue ping -I oaitun_ue1 -c 5 upf.free5gc.org
+docker exec upf ping -c 5 10.60.0.1 
 ```
 
 ### 5. Running the PTP Emulation
-Two additional containers will simulate a ptp exchange through the 5gs connection.
+Two additional containers will simulate a ptp exchange through the 5gs connection.\
 The system can be started with `scripts/launch_ptp_emulation.sh`.
 
 ## Development
