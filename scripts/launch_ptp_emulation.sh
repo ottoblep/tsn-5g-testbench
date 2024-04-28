@@ -8,11 +8,4 @@ echo "Launching ptp containers" &&
 docker compose --profile ptpsim up -d &&
 
 echo "Setting up routing for PTP packets" &&
-$(dirname "$0")/setup_ptp_routing.sh &&
-
-echo "Running ptp slave" &&
-docker exec -d ptp-slave /bestvibes-ptp/slave/slave.out &&
-sleep 1 &&
-
-echo "Running ptp master" &&
-docker exec ptp-master /bestvibes-ptp/master/master.out
+$(dirname "$0")/setup_ptp_routing.sh
