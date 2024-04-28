@@ -6,8 +6,6 @@ RUN apt-get update && \
        iproute2 \
        build-essential \
        git
-       # python3-pip && \
-    # pip3 install --ignore-installed pyyaml
 
 RUN git clone -b dev https://github.com/bestvibes/IEEE1588-PTP /bestvibes-ptp
 COPY ./*.patch /bestvibes-ptp
