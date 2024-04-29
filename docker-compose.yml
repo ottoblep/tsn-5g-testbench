@@ -285,7 +285,7 @@ services:
   ptp-master: # Base Station Side
     profiles: ["ptpsim"]
     container_name: ptp-master 
-    command: tcpreplay -i eth0 -l 1000 --loopdelay-ms=2000 /ptpv2_master_slave.pcap
+    command: tcpreplay -i eth0 -l 10000 --loopdelay-ms=1000 /ptpv2_sync.pcap
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
@@ -297,7 +297,7 @@ services:
   ptp-slave: # UE Side
     profiles: ["ptpsim"]
     container_name: ptp-slave 
-    entrypoint: sleep infinity
+    command: tcpreplay -i eth0 -l 10000 --loopdelay-ms=1000 /ptpv2_delay_req.pcap
     networks:
       tsn-bridge-out:
         ipv4_address: 10.100.202.200

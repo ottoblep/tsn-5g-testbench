@@ -6,4 +6,4 @@ RUN apt-get update && \
        iproute2 \
        tcpreplay
 
-COPY ./ptpv2_master_slave.pcap /
+COPY ./*.pcap /

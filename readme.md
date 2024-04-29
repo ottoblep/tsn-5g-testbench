@@ -103,7 +103,7 @@ docker exec upf ping -c 5 10.60.0.1 # Downlink ping
 ```
 
 ### 5. Running the PTP Emulation
-Two additional containers will simulate a ptp exchange through the 5gs connection.\
+Two additional containers will send static ptp packets via tcpreplay. The ptp-master sends sync messages and the ptp-slave delay-requests.\
 The system can be started with `scripts/launch_ptp_emulation.sh`.
 
 ## Development
