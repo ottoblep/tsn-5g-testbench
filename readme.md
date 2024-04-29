@@ -18,12 +18,13 @@ A software emulated 5G-TSN bridge system.
     - [x] IP Traffic
 - **TSN** 
     - [ ] Transparent Clock
-        - [x] External PTP traffic simulation
-        - [ ] DS-TT and NW-TT 
+        - [x] External PTP traffic simulation (static packets)
+        - [ ] Custom build of UPF, UE and TSN AF
+        - [ ] E2E delay measurement and packet update
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
-        - [ ] DS-TT and NW-TT 
-        - [ ] TSN AF
+        - [ ] QoS setting / mapping
+        - [ ] AF and TSN network communication
 
 ## Setup
 
