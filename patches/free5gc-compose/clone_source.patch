@@ -1,0 +1,26 @@
+diff --git a/base/Dockerfile.nf b/base/Dockerfile.nf
+index 11ededf..cfb604f 100644
+--- a/base/Dockerfile.nf
++++ b/base/Dockerfile.nf
+@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
+ ARG F5GC_MODULE
+ 
+ # Get Free5GC
+-COPY free5gc/ $GOPATH/src/free5gc/
++RUN git clone --recurse-submodules https://github.com/free5gc/free5gc $GOPATH/src/free5gc/
+ 
+ RUN cd $GOPATH/src/free5gc \
+     && make ${F5GC_MODULE}
+diff --git a/base/Dockerfile.nf.webconsole b/base/Dockerfile.nf.webconsole
+index d9c8323..acde2cb 100644
+--- a/base/Dockerfile.nf.webconsole
++++ b/base/Dockerfile.nf.webconsole
+@@ -7,7 +7,7 @@ FROM free5gc/base as my-base
+ ENV DEBIAN_FRONTEND noninteractive
+ 
+ # Get Free5GC
+-COPY free5gc/ $GOPATH/src/free5gc/
++RUN git clone --recurse-submodules https://github.com/free5gc/free5gc $GOPATH/src/free5gc/
+ 
+ RUN cd $GOPATH/src/free5gc \
+     && apt-get update \

@@ -47,26 +47,13 @@ cd ..
 modprobe gtp5g
 ```
 
-#### 1.4 Apply patches
+#### 1.5 Build customized base images
 ```bash
-# Various patches for OAI
-# - Sending the 5g mobility management capability field during UE registration, which free5gc requires
-# - A dirty fix for the UE to skip unknown fields in the PDU establishment accept message, otherwise the UE aborts parsing the message
-# - Add iptables to UE for routing purposes
-# - Speed up the OAI build process by removing 4G components
-git apply ./patches/openairinterface5g/*.patch --directory=openairinterface5g
+./scripts/build_oai_base_images.sh
+./scripts/build_free5gc_base_images.sh
 ```
 
-#### 1.5 Build custom image for OAI-UE (more information [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/tree/master/docker))
-```bash
-cd openairinterface5g
-docker build --target ran-base --tag ran-base:latest --file docker/Dockerfile.base.ubuntu20 .
-docker build --target ran-build --tag ran-build:latest --file docker/Dockerfile.build.ubuntu20 .
-docker build --target oai-nr-ue --tag oai-nr-ue:develop --file docker/Dockerfile.nrUE.ubuntu20 .
-cd ..
-```
-
-#### 1.6 Import subscriber database
+#### 1.7 Import subscriber database
 ```bash
 ./scripts/restore_db.sh
 ```

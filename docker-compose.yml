@@ -220,7 +220,8 @@ services:
     profiles: ["5gs"]
     container_name: upf
     privileged: true
-    image: free5gc/upf:v3.4.1
+    build:
+      context: ./free5gc-compose/nf_upf
     command: ./upf -c ./config/upfcfg.yaml
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
