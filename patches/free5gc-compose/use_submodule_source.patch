@@ -1,5 +1,5 @@
 diff --git a/base/Dockerfile.nf b/base/Dockerfile.nf
-index 11ededf..3bf6cb3 100644
+index 11ededf..84c19dc 100644
 --- a/base/Dockerfile.nf
 +++ b/base/Dockerfile.nf
 @@ -8,7 +8,9 @@ ENV DEBIAN_FRONTEND noninteractive
@@ -9,12 +9,12 @@ index 11ededf..3bf6cb3 100644
 -COPY free5gc/ $GOPATH/src/free5gc/
 +RUN git clone --recurse-submodules https://github.com/free5gc/free5gc $GOPATH/src/free5gc/
 +RUN rm -rf $GOPATH/src/free5gc/NFs/upf
-+RUN git clone https://github.com/ottoblep/go-upf $GOPATH/src/free5gc/NFs/upf
++COPY go-upf $GOPATH/src/free5gc/NFs/upf
  
  RUN cd $GOPATH/src/free5gc \
      && make ${F5GC_MODULE}
 diff --git a/base/Dockerfile.nf.webconsole b/base/Dockerfile.nf.webconsole
-index d9c8323..b9df119 100644
+index d9c8323..1b35ed7 100644
 --- a/base/Dockerfile.nf.webconsole
 +++ b/base/Dockerfile.nf.webconsole
 @@ -7,7 +7,9 @@ FROM free5gc/base as my-base
@@ -24,7 +24,7 @@ index d9c8323..b9df119 100644
 -COPY free5gc/ $GOPATH/src/free5gc/
 +RUN git clone --recurse-submodules https://github.com/free5gc/free5gc $GOPATH/src/free5gc/
 +RUN rm -rf $GOPATH/src/free5gc/NFs/upf
-+RUN git clone https://github.com/ottoblep/go-upf $GOPATH/src/free5gc/NFs/upf
++COPY go-upf $GOPATH/src/free5gc/NFs/upf
  
  RUN cd $GOPATH/src/free5gc \
      && apt-get update \
