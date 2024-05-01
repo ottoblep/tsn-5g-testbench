@@ -52,10 +52,22 @@ apt install git docker docker-compose-plugin
 git submodule update --init --recursive
 ```
 
-#### 1.3 Install [kernel module for GTP](https://github.com/free5gc/gtp5g) on the host machine
-Dependencies are system specific. Please follow the instructions at the link.
+#### 1.3 Install [kernel module for GTP](https://github.com/free5gc/gtp5g)
+Example instructions for ubuntu
+```bash
+apt install -y build-essential gcc-12
+cd gtp5g
+make
+sudo make install
+cd ..
+```
+Check if the module can be loaded
+```bash
+sudo modprobe gtp5g
+sudo lsmod | grep gtp5g
+```
 
-#### 1.5 Build customized base images
+#### 1.4 Apply patches
 ```bash
 ./scripts/build_oai_base_images.sh
 ./scripts/build_free5gc_base_images.sh
