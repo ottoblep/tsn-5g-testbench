@@ -26,6 +26,19 @@ A software emulated 5G-TSN bridge system.
         - [ ] QoS setting / mapping
         - [ ] AF and TSN network communication
 
+## Repo Structure
+This setup pulls a complicated network of containers from various sources.\
+All sources which need to be modified are included as submodules, so they can be identified at a glance.\
+Sources are modified either with git patches or by maintaining a fork.\
+The following is a hierarchical list of the sources involved.
+
+- Toplevel Docker Compose File
+    - Pre-Built Free5GC images pulled from Docker-Hub
+    - Pre-Build OAI images pulled from Docker-Hub
+    - Self-Built Free5GC images built with [Free5GC Compose](https://github.com/free5gc/free5gc-compose) and forked sources for subcomponents (e.g. go-upf).
+    - Self-Built OAI images built with the official dockerfiles and a fork of openairinterface5g
+    - Custom dockerfile for PTP operation
+
 ## Setup
 
 #### 1.1 Install Docker
