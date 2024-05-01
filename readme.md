@@ -39,12 +39,18 @@ git submodule update --init --recursive
 ```
 
 #### 1.3 Install [kernel module for GTP](https://github.com/free5gc/gtp5g)
+Example instructions for ubuntu
 ```bash
+apt install -y build-essential gcc-12
 cd gtp5g
-make clean && make
-make install
+make
+sudo make install
 cd ..
-modprobe gtp5g
+```
+Check if the module can be loaded
+```bash
+sudo modprobe gtp5g
+sudo lsmod | grep gtp5g
 ```
 
 #### 1.4 Apply patches
