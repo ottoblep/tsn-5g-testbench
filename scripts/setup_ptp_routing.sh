@@ -21,5 +21,5 @@ docker exec oai-nr-ue ip r add 10.100.201.0/24 dev oaitun_ue1
 # However, the tunnel only accepts one destination IP (10.60.0.1) in the downstream direction
 # docker exec upf ip r add 10.100.202.0/24 dev upfgtp # This doesnt work
 # Instead we use the UE ip as the destination and port forward to the connected services
-docker exec oai-nr-ue iptables-nft -t nat -I PREROUTING -p tcp --dport 2468 -j DNAT --to-destination 10.100.202.200:2468
-docker exec oai-nr-ue iptables-nft -t nat -I PREROUTING -p udp --dport 2468 -j DNAT --to-destination 10.100.202.200:2468
+docker exec oai-nr-ue iptables-nft -t nat -I PREROUTING -p tcp --dport 319 -j DNAT --to-destination 10.100.202.200:319
+docker exec oai-nr-ue iptables-nft -t nat -I PREROUTING -p udp --dport 319 -j DNAT --to-destination 10.100.202.200:319
