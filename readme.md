@@ -73,7 +73,7 @@ sudo modprobe gtp5g
 sudo lsmod | grep gtp5g
 ```
 
-#### 1.4 Apply patches
+#### 1.4 Build custom docker images 
 ```bash
 ./scripts/build_oai_images.sh
 ./scripts/build_free5gc_images.sh
