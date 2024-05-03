@@ -20,6 +20,7 @@ A software emulated 5G-TSN bridge system.
     - [ ] Transparent Clock
         - [x] External PTP traffic simulation (static packets)
         - [x] Custom build of UPF, UE ~~and TSN AF~~
+        - [ ] Development Environment for UPF and UE
         - [ ] E2E delay measurement and packet update
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
