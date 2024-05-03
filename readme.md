@@ -19,7 +19,7 @@ A software emulated 5G-TSN bridge system.
 - **TSN** 
     - [ ] Transparent Clock
         - [x] External PTP traffic simulation (static packets)
-        - [ ] Custom build of UPF, UE and TSN AF
+        - [x] Custom build of UPF, UE ~~and TSN AF~~
         - [ ] E2E delay measurement and packet update
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
@@ -27,17 +27,22 @@ A software emulated 5G-TSN bridge system.
         - [ ] AF and TSN network communication
 
 ## Repo Structure
-This setup pulls a complicated network of containers from various sources.\
-All sources which need to be modified are included as submodules, so they can be identified at a glance.\
-Sources are modified either with git patches or by maintaining a fork.\
+This repo constructs a rather involved network of containers from various sources.\
+All sources which have been modified for this project are tracked as git submodules, so they can be identified at a glance.\
+Sources are modified either with git patches for small changes (e.g. free5gc-compose) or by maintaining a fork for larger ones (e.g. openairinterface5g).\
 The following is a hierarchical list of the sources involved.
 
 - Toplevel Docker Compose File
     - Pre-Built Free5GC images pulled from Docker-Hub
-    - Pre-Build OAI images pulled from Docker-Hub
-    - Self-Built Free5GC images built with [Free5GC Compose](https://github.com/free5gc/free5gc-compose) and forked sources for subcomponents (e.g. go-upf).
-    - Self-Built OAI images built with the official dockerfiles and a fork of openairinterface5g
-    - Custom dockerfile for PTP operation
+    - Pre-Built OAI images pulled from Docker-Hub
+    - Self-Built Free5GC images
+        - Built with dockerfiles from a patched [Free5GC Compose](https://github.com/free5gc/free5gc-compose)
+            - [Free5GC main repo](https://github.com/free5gc/free5gc) and network functions are cloned at build time
+            - Forked sources for only the modified network functions are then inserted (e.g. go-upf).
+    - Self-Built OAI images 
+        - Built with the official dockerfiles
+            - Forked source for openairinterface5g
+    - Custom dockerfile for PTP helpers
 
 ## Setup
 
@@ -48,6 +53,7 @@ apt install git docker docker-compose-plugin
 ```
 
 #### 1.2 Clone this repo and pull submodules
+This will pull all submodules. No further manual cloning of sources is required.
 ```bash
 git submodule update --init --recursive
 ```
