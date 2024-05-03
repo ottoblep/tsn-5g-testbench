@@ -84,7 +84,6 @@ oai-nr-ue  | PDU SESSION ESTABLISHMENT ACCEPT - Received UE IP: 10.60.0.1
 
 Confirm IP connection
 ```bash
-docker exec upf apt install -y iputils-ping
 docker exec oai-nr-ue ping -I oaitun_ue1 -c 5 upf.free5gc.org # Uplink ping
 docker exec upf ping -c 5 10.60.0.1 # Downlink ping
 ```
