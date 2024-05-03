@@ -233,6 +233,24 @@ services:
       tsn-bridge-in: # eth1
         ipv4_address: 10.100.201.100
 
+  free5gc-upf-dev:
+  # This container is only used during development
+  # It constitutes a compilation environment for the upf
+    profiles: ["dev"]
+    container_name: upf-dev
+    privileged: true
+    command: sleep infinity
+    build:
+      context: ./
+      dockerfile: ./docker/free5gc/upf/Dockerfile.dev
+    volumes:
+      - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
+      # We bind the source from the host so all changes are reflected in ./go-upf and can be committed from there
+      - ./go-upf:/free5gc/NFs/upf
+    networks:
+      5gs-bridge: # eth0
+        ipv4_address: 10.100.200.171
+
   oai-gnb:
     profiles: ["5gs"]
     image: oaisoftwarealliance/oai-gnb:develop
