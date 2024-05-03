@@ -1,9 +1,6 @@
 [submodule "gtp5g"]
 	path = gtp5g
 	url = https://github.com/free5gc/gtp5g
-[submodule "free5gc-compose"]
-	path = free5gc-compose
-	url = https://github.com/free5gc/free5gc-compose
 [submodule "openairinterface5g"]
 	path = openairinterface5g
 	url = https://github.com/ottoblep/openairinterface5g

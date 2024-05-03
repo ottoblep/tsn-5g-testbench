@@ -221,7 +221,7 @@ services:
     container_name: upf
     privileged: true
     build:
-      context: ./free5gc-compose/nf_upf
+      context: ./docker/free5gc/upf
     command: ./upf -c ./config/upfcfg.yaml
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
@@ -293,7 +293,7 @@ services:
     cap_add:
       - NET_ADMIN
     build:
-      context: ./ptp-emulator
+      context: ./docker/ptp-emulator
 
   ptp-slave: # UE Side
     profiles: ["ptpsim"]
@@ -305,8 +305,8 @@ services:
     cap_add:
       - NET_ADMIN
     build:
-      context: ./ptp-emulator
-    
+      context: ./docker/ptp-emulator
+
 networks:
   5gs-bridge:
     ipam:
