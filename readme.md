@@ -69,8 +69,8 @@ sudo lsmod | grep gtp5g
 
 #### 1.4 Apply patches
 ```bash
-./scripts/build_oai_base_images.sh
-./scripts/build_free5gc_base_images.sh
+./scripts/build_oai_images.sh
+./scripts/build_free5gc_images.sh
 ```
 
 #### 1.7 Import subscriber database

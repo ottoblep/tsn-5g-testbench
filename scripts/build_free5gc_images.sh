@@ -7,5 +7,5 @@ cd $SCRIPTPATH/../free5gc-compose
 git apply ../patches/free5gc-compose/*.patch
 cp -rf ../go-upf ./base # Docker copy only accepts files below it 
 
-docker build -t free5gc/base:latest -f ./base
+docker build -t free5gc/base:latest ./base
 docker build --build-arg F5GC_MODULE=upf -t free5gc/upf-base:latest -f ./base/Dockerfile.nf ./base
