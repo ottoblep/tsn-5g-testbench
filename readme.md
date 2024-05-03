@@ -95,20 +95,8 @@ Two additional containers will send static ptp packets via tcpreplay. The ptp-ma
 ```
 
 ## Repo Structure
-This repo constructs a rather involved network of containers from various sources.\
 All sources which have been modified for this project are tracked as git submodules, so they can be identified at a glance.\
-The following is a hierarchical list of the sources involved.
-
-- Toplevel Docker Compose File
-    - Pre-Built Free5GC images pulled from [Docker-Hub](https://hub.docker.com/search?q=free5gc)
-    - Pre-Built OAI images pulled from [Docker-Hub](https://hub.docker.com/search?q=oaisoftwarealliance)
-    - Self-Built Free5GC images
-            - [Free5GC main repo](https://github.com/free5gc/free5gc) and network functions are cloned at build time
-            - Forked sources for only the modified network functions are then inserted (e.g. [go-upf](https://github.com/ottoblep/go-upf)).
-    - Self-Built OAI images 
-        - Built with the [official dockerfiles](https://github.com/OPENAIRINTERFACE/openairinterface5g/tree/develop/docker)
-            - [Forked source for openairinterface5g](https://github.com/ottoblep/openairinterface5g)
-    - Custom dockerfile for PTP helpers
+The toplevel `docker-compose.yml` file is the centerpiece.
 
 ## Development
 
