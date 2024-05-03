@@ -26,24 +26,6 @@ A software emulated 5G-TSN bridge system.
         - [ ] QoS setting / mapping
         - [ ] AF and TSN network communication
 
-## Repo Structure
-This repo constructs a rather involved network of containers from various sources.\
-All sources which have been modified for this project are tracked as git submodules, so they can be identified at a glance.\
-Sources are modified either with git patches for small changes (e.g. free5gc-compose) or by maintaining a fork for larger ones (e.g. openairinterface5g).\
-The following is a hierarchical list of the sources involved.
-
-- Toplevel Docker Compose File
-    - Pre-Built Free5GC images pulled from [Docker-Hub](https://hub.docker.com/search?q=free5gc)
-    - Pre-Built OAI images pulled from [Docker-Hub](https://hub.docker.com/search?q=oaisoftwarealliance)
-    - Self-Built Free5GC images
-        - Built with dockerfiles from a patched [Free5GC Compose](https://github.com/free5gc/free5gc-compose)
-            - [Free5GC main repo](https://github.com/free5gc/free5gc) and network functions are cloned at build time
-            - Forked sources for only the modified network functions are then inserted (e.g. [go-upf](https://github.com/ottoblep/go-upf)).
-    - Self-Built OAI images 
-        - Built with the [official dockerfiles](https://github.com/OPENAIRINTERFACE/openairinterface5g/tree/develop/docker)
-            - [Forked source for openairinterface5g](https://github.com/ottoblep/openairinterface5g)
-    - Custom dockerfile for PTP helpers
-
 ## Setup
 
 #### 1.1 Install Docker
@@ -111,6 +93,24 @@ Two additional containers will send static ptp packets via tcpreplay. The ptp-ma
 ```bash
 ./scripts/launch_ptp_emulation.sh
 ```
+
+## Repo Structure
+This repo constructs a rather involved network of containers from various sources.\
+All sources which have been modified for this project are tracked as git submodules, so they can be identified at a glance.\
+Sources are modified either with git patches for small changes (e.g. free5gc-compose) or by maintaining a fork for larger ones (e.g. openairinterface5g).\
+The following is a hierarchical list of the sources involved.
+
+- Toplevel Docker Compose File
+    - Pre-Built Free5GC images pulled from [Docker-Hub](https://hub.docker.com/search?q=free5gc)
+    - Pre-Built OAI images pulled from [Docker-Hub](https://hub.docker.com/search?q=oaisoftwarealliance)
+    - Self-Built Free5GC images
+        - Built with dockerfiles from a patched [Free5GC Compose](https://github.com/free5gc/free5gc-compose)
+            - [Free5GC main repo](https://github.com/free5gc/free5gc) and network functions are cloned at build time
+            - Forked sources for only the modified network functions are then inserted (e.g. [go-upf](https://github.com/ottoblep/go-upf)).
+    - Self-Built OAI images 
+        - Built with the [official dockerfiles](https://github.com/OPENAIRINTERFACE/openairinterface5g/tree/develop/docker)
+            - [Forked source for openairinterface5g](https://github.com/ottoblep/openairinterface5g)
+    - Custom dockerfile for PTP helpers
 
 ## Development
 
