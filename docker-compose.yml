@@ -280,6 +280,8 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+        # We bind the source from the host so all changes are reflected in ./openairinterface5g and can be committed from there
+        - ./openairinterface5g:/openairinterface5g
     healthcheck:
         test: /bin/bash -c "pgrep nr-uesoftmodem"
         interval: 10s
