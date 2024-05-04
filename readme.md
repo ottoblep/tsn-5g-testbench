@@ -20,7 +20,7 @@ A software emulated 5G-TSN bridge system.
     - [ ] Transparent Clock
         - [x] External PTP traffic simulation (static packets)
         - [x] Custom build of UPF, UE ~~and TSN AF~~
-        - [ ] Development Environment for UPF and UE
+        - [x] Development Environment for UPF and UE
         - [ ] E2E delay measurement and packet update
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
@@ -95,7 +95,7 @@ Two additional containers will send static ptp packets via tcpreplay. The ptp-ma
 ```
 
 ## Repo Structure
-All sources which have been modified for this project are tracked as git submodules, so they can be identified at a glance.\
+All forks that are part of this project are tracked as git submodules, so they can be identified at a glance.\
 The toplevel `docker-compose.yml` file is the centerpiece.
 
 ## Development
