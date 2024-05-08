@@ -223,11 +223,8 @@ services:
     build:
       context: ./
       dockerfile: ./docker/free5gc/upf/Dockerfile
-    command: ./bin/upf -c /free5gc/config/upfcfg.yaml
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
-      # We bind the source from the host so all changes are reflected in ./go-upf and can be committed from there
-      - ./go-upf:/free5gc/NFs/upf
     networks:
       5gs-bridge: # eth0
         ipv4_address: 10.100.200.137

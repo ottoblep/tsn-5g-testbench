@@ -5,6 +5,3 @@
 	path = openairinterface5g
 	url = https://github.com/ottoblep/openairinterface5g
 	branch = develop
-[submodule "go-upf"]
-	path = go-upf
-	url = https://github.com/ottoblep/go-upf

@@ -8,15 +8,11 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install UPF dependencies
 RUN apt-get update \
-    && apt-get install -y libmnl0 libyaml-0-2 iproute2 iptables strace net-tools iputils-ping curl netcat\
+    && apt-get install -y libmnl0 libyaml-0-2 iproute2 iptables strace net-tools iputils-ping curl netcat tcpdump\
     && apt-get clean
 
-# Get Free5GC
+# Build Free5GC
 RUN git clone --recurse-submodules https://github.com/free5gc/free5gc /free5gc
-
-# Replace select network functions with forked versions
-RUN rm -rf free5gc/NFs/upf
-ADD go-upf free5gc/NFs/upf
 
 WORKDIR /free5gc
 RUN make upf 
@@ -27,11 +23,15 @@ RUN git clone https://github.com/free5gc/go-gtp5gnl.git && mkdir "go-gtp5gnl/bin
     cd "go-gtp5gnl/cmd/gogtp5g-tunnel" &&  go build -o "/free5gc/gtp5g-tunnel" . && \
     cd -
 
-# Remove source and bind the one from the host for further live development
-RUN rm -rf free5gc/NFs/upf
+COPY ./docker/free5gc/upf/entrypoint.sh /entrypoint.sh
+RUN ["chmod", "+x", "/entrypoint.sh"]
+CMD /entrypoint.sh
+
+# Build NW-TT 
+COPY ./go-tt /go-tt
+WORKDIR /go-tt
+RUN go build
 
 # Config files volume
 VOLUME [ "/free5gc/config" ]
 
-# We bind the upf source as a volume so we can develop on the host and compile in the container
-VOLUME [ "/free5gc/NFs/upf" ]
