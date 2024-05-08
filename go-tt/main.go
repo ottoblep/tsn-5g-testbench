@@ -10,63 +10,63 @@ import (
 )
 
 func main() {
-	bridge_interface := flag.String("brif", "eth1", "Interface of TT bridge outside port")
+	port_interface_name := flag.String("brif", "eth1", "Interface of TT bridge outside port")
 	fivegs_opponent_ip := flag.String("upip", "10.60.0.1", "IP of either UE or UPF where ptp packets will be forwarded")
 	flag.Parse()
-	TtListen(*bridge_interface, *fivegs_opponent_ip)
+	TtListen(*port_interface_name, *fivegs_opponent_ip)
 }
 
-func TtListen(bridge_interface string, fivegs_opponent_ip string) {
+func TtListen(port_interface_name string, fivegs_opponent_ip string) {
 	// Receives PTP messages via multicast 224.0.0.107 or 129 with port 319
 	// Forward packets via 5GS or sends multicast to outside
 
 	non_peer_msg_multicast_grp := net.IPv4(224, 0, 1, 129)
 	peer_msg_multicast_grp := net.IPv4(224, 0, 0, 107)
 
-	uplink_interface, err := net.InterfaceByName(bridge_interface) // TODO: interface must not be hard-coded
+	port_interface, err := net.InterfaceByName(port_interface_name)
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
 	}
 
-	uplink_multicast_conn, err := net.ListenPacket("udp4", "0.0.0.0:319")
+	multicast_conn, err := net.ListenPacket("udp4", "0.0.0.0:319")
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
 	}
 
-	downlink_conn, err := net.Dial("udp", fivegs_opponent_ip + ":319") // TODO: UE ip must not be hard-coded
+	fivegs_conn, err := net.Dial("udp", fivegs_opponent_ip + ":319")
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
 	}
 
 	// Join multicast groups
-	uplink_multicast_packet_conn := ipv4.NewPacketConn(uplink_multicast_conn)
-	if err := uplink_multicast_packet_conn.JoinGroup(uplink_interface, &net.UDPAddr{IP: non_peer_msg_multicast_grp}); err != nil {
+	multicast_packet_conn := ipv4.NewPacketConn(multicast_conn)
+	if err := multicast_packet_conn.JoinGroup(port_interface, &net.UDPAddr{IP: non_peer_msg_multicast_grp}); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	if err := uplink_multicast_packet_conn.JoinGroup(uplink_interface, &net.UDPAddr{IP: peer_msg_multicast_grp}); err != nil {
+	if err := multicast_packet_conn.JoinGroup(port_interface, &net.UDPAddr{IP: peer_msg_multicast_grp}); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
 	// Enable identification of multicast packets by destination
 	// With this we can group the PTP messages into peer-delay and non-peer-delay types https://en.wikipedia.org/wiki/Precision_Time_Protocol
-	if err := uplink_multicast_packet_conn.SetControlMessage(ipv4.FlagDst, true); err != nil {
+	if err := multicast_packet_conn.SetControlMessage(ipv4.FlagDst, true); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	defer uplink_multicast_conn.Close()
-	defer uplink_multicast_packet_conn.Close()
+	defer multicast_conn.Close()
+	defer multicast_packet_conn.Close()
 
 	fmt.Println("TT: initialization complete")
 
 	b := make([]byte, 1024)
 	for {
-		_, cm, _, err := uplink_multicast_packet_conn.ReadFrom(b)
+		_, cm, _, err := multicast_packet_conn.ReadFrom(b)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
@@ -75,7 +75,7 @@ func TtListen(bridge_interface string, fivegs_opponent_ip string) {
 			if cm.Dst.Equal(peer_msg_multicast_grp) {
 				fmt.Println("TT: received a peer delay ptp message")
 				b = HandlePacket(b)
-				downlink_conn.Write(b)
+				fivegs_conn.Write(b)
 				if err != nil { 
 					fmt.Println(err.Error())
 					return
@@ -83,7 +83,7 @@ func TtListen(bridge_interface string, fivegs_opponent_ip string) {
 			} else if cm.Dst.Equal(non_peer_msg_multicast_grp) {
 				fmt.Println("TT: received a non-peer-delay ptp message")
 				b = HandlePacket(b)
-				downlink_conn.Write(b)
+				fivegs_conn.Write(b)
 				if err != nil { 
 					fmt.Println(err.Error())
 					return
@@ -94,7 +94,7 @@ func TtListen(bridge_interface string, fivegs_opponent_ip string) {
 		} else {
 			fmt.Println("TT: received non-multicast packet")
 			b = HandlePacket(b)
-			_, err := downlink_conn.Write(b)
+			_, err := fivegs_conn.Write(b)
 			if err != nil { 
 				fmt.Println(err.Error())
 				return
