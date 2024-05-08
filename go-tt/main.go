@@ -4,22 +4,26 @@ import (
 	"net"
 	"time"
 	"fmt"
+	"flag"
 	"golang.org/x/net/ipv4"
 	"github.com/facebook/time/ptp/protocol"
 )
 
 func main() {
-	TtListen()
+	bridge_interface := flag.String("brif", "eth1", "Interface of TT bridge outside port")
+	fivegs_opponent_ip := flag.String("upip", "10.60.0.1", "IP of either UE or UPF where ptp packets will be forwarded")
+	flag.Parse()
+	TtListen(*bridge_interface, *fivegs_opponent_ip)
 }
 
-func TtListen() {
+func TtListen(bridge_interface string, fivegs_opponent_ip string) {
 	// Receives PTP messages via multicast 224.0.0.107 or 129 with port 319
 	// Forward packets via 5GS or sends multicast to outside
 
 	non_peer_msg_multicast_grp := net.IPv4(224, 0, 1, 129)
 	peer_msg_multicast_grp := net.IPv4(224, 0, 0, 107)
 
-	uplink_interface, err := net.InterfaceByName("eth1") // TODO: interface must not be hard-coded
+	uplink_interface, err := net.InterfaceByName(bridge_interface) // TODO: interface must not be hard-coded
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
@@ -31,7 +35,7 @@ func TtListen() {
 		return
 	}
 
-	downlink_conn, err := net.Dial("udp", "10.60.0.1:319") // TODO: UE ip must not be hard-coded
+	downlink_conn, err := net.Dial("udp", fivegs_opponent_ip + ":319") // TODO: UE ip must not be hard-coded
 	if err != nil { 
 		fmt.Println(err.Error())
 		return

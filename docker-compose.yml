@@ -225,6 +225,12 @@ services:
       dockerfile: ./docker/free5gc/upf/Dockerfile
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
+    command: >
+      bash -c "
+      /free5gc/bin/upf -c /free5gc/config/upfcfg.yaml &
+      /go-tt/go-tt -brif eth1 -upip 10.60.0.1 &
+      wait -n
+      "
     networks:
       5gs-bridge: # eth0
         ipv4_address: 10.100.200.137

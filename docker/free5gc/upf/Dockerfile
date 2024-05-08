@@ -23,10 +23,6 @@ RUN git clone https://github.com/free5gc/go-gtp5gnl.git && mkdir "go-gtp5gnl/bin
     cd "go-gtp5gnl/cmd/gogtp5g-tunnel" &&  go build -o "/free5gc/gtp5g-tunnel" . && \
     cd -
 
-COPY ./docker/free5gc/upf/entrypoint.sh /entrypoint.sh
-RUN ["chmod", "+x", "/entrypoint.sh"]
-CMD /entrypoint.sh
-
 # Build NW-TT 
 COPY ./go-tt /go-tt
 WORKDIR /go-tt
