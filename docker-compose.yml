@@ -268,8 +268,12 @@ services:
     image: oai-nr-ue:develop
     privileged: true
     container_name: oai-nr-ue
-    command: /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
-    entrypoint: /tini -v -- /opt/oai-nr-ue/bin/entrypoint.sh
+    command: 
+    entrypoint: >
+      bash -c "
+      /go-tt/go-tt -brif eth1 -upip 10.100.200.137 &
+      /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+      "
     environment:
         USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000001 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
     depends_on:
@@ -283,8 +287,6 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
-        # We bind the source from the host so all changes are reflected in ./openairinterface5g and can be committed from there
-        - ./openairinterface5g:/openairinterface5g
     healthcheck:
         test: /bin/bash -c "pgrep nr-uesoftmodem"
         interval: 10s
