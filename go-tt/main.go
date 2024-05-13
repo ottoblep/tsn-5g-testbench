@@ -29,13 +29,14 @@ func TtListen(port_interface_name string, gtp_tun_ip string, gtp_tun_ip_opponent
 		return
 	}
 
-	fivegs_opponent_addr, err := net.ResolveUDPAddr("udp", gtp_tun_ip_opponent + ":319")
+	// IP port 50000 is arbitrarily chosen to communicate between UE and UPF because the multicast is bound to 319
+	fivegs_opponent_addr, err := net.ResolveUDPAddr("udp", gtp_tun_ip_opponent + ":50000")
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
 	}
 
-	local_address, err := net.ResolveUDPAddr("udp", ":319")
+	local_address, err := net.ResolveUDPAddr("udp", ":50000")
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
