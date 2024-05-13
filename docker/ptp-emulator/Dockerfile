@@ -4,6 +4,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes \
        inetutils-ping \
        iproute2 \
-       tcpreplay
+       tcpreplay \
+       xxd
 
 COPY ./*.pcap /
