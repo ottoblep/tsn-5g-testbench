@@ -2,7 +2,7 @@
 # this does not discard the build environment including the compiler and source code
 # so it can be used for development
 
-FROM free5gc/base
+FROM free5gc-base as free5gc-upf
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -26,11 +26,6 @@ RUN mkdir -p cert/ public
 RUN git clone https://github.com/free5gc/go-gtp5gnl.git && mkdir "go-gtp5gnl/bin" && \
     cd "go-gtp5gnl/cmd/gogtp5g-tunnel" &&  go build -o "/free5gc/gtp5g-tunnel" . && \
     cd -
-
-# Build NW-TT 
-COPY ./go-tt /go-tt
-WORKDIR /go-tt
-RUN go build
 
 # Config files volume
 VOLUME [ "/free5gc/config" ]

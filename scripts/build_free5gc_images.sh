@@ -4,4 +4,6 @@ SCRIPTPATH=`dirname $0`
 # Docker builds can not copy files from a parent directory
 cd $SCRIPTPATH/..
 
-docker build -t free5gc/base:latest -f ./docker/free5gc/base/Dockerfile .
+docker build --target free5gc-base --file ./docker/free5gc/base/Dockerfile .
+docker build --target free5gc-upf --file ./docker/free5gc/upf/Dockerfile .
+docker build --target free5gc-upf-nwtt --file ./docker/free5gc/upfnwtt/Dockerfile .

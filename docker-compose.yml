@@ -220,9 +220,7 @@ services:
     profiles: ["5gs"]
     container_name: upf
     privileged: true
-    build:
-      context: ./
-      dockerfile: ./docker/free5gc/upf/Dockerfile
+    image: free5gc-upf-nwtt
     volumes:
       - ./config/upfcfg.yaml:/free5gc/config/upfcfg.yaml
     command: >
