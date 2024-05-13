@@ -42,13 +42,13 @@ func TtListen(port_interface_name string, gtp_tun_ip string, gtp_tun_ip_opponent
 		return
 	}
 
-	peer_addr, err := net.ResolveUDPAddr("udp", "224.0.1.129:319")
+	peer_addr, err := net.ResolveUDPAddr("udp", "224.0.0.107:319")
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
 	}
 
-	non_peer_addr, err := net.ResolveUDPAddr("udp", "224.0.0.107:319")
+	non_peer_addr, err := net.ResolveUDPAddr("udp", "224.0.1.129:319")
 	if err != nil { 
 		fmt.Println(err.Error())
 		return
