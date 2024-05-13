@@ -11,13 +11,12 @@ import (
 
 func main() {
 	port_interface_name := flag.String("portif", "eth1", "Interface of TT bridge outside port")
-	gtp_tun_ip := flag.String("tunip", "10.100.200.137", "IP of this endpoint of the gtp tunnel (in upstream direction there is no interface ip just the routing matters)")
 	gtp_tun_ip_opponent := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
 	flag.Parse()
-	TtListen(*port_interface_name, *gtp_tun_ip, *gtp_tun_ip_opponent)
+	TtListen(*port_interface_name, *gtp_tun_ip_opponent)
 }
 
-func TtListen(port_interface_name string, gtp_tun_ip string, gtp_tun_ip_opponent string) {
+func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 	// Receives PTP messages via multicast 224.0.0.107 or 224.0.1.129 with ip port 319
 	// Forwards packets via 5GS or sends multicast to outside
 	// Updates the correction field of PTP packets passing through the 5GS
