@@ -1,4 +1,4 @@
-# 5g-tsn-testbench
+# tan-5g-testbench
 
 A software emulated 5G-TSN bridge system.
 
