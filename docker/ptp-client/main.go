@@ -1,16 +1,34 @@
 package main
 
 import (
-	// "github.com/facebook/time/ptp"
+	"flag"
+	"fmt"
+	"github.com/facebook/time/ptp/simpleclient"
+	"time"
 )
 
 func main() {
-	// port_interface_name := flag.String("portif", "eth1", "Interface of TT bridge outside port")
-	// gtp_tun_ip_opponent := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
-	// flag.Parse()
-	StartServer()//*port_interface_name, *gtp_tun_ip_opponent)
+	server_addr := flag.String("serv_ip", "10.200.202.100", "PTP-Server Address (in this case forwarded by the bridge)")
+	ifname := flag.String("if", "eth0", "interface name to send/receive packets")
+	flag.Parse()
+
+	cfg := &simpleclient.Config{
+		Address: *server_addr,
+		Iface: *ifname,
+		Timeout: 1 * time.Second,
+		Duration: 1 * time.Minute,
+		Timestamping: 0, // = Software https://pkg.go.dev/github.com/facebook/time/timestamp#Timestamp
+	}
+
+	client := simpleclient.New(cfg, displayResult)
+	err := client.Run()
+	fmt.Println(err.Error())
 }
 
-func StartServer() {
-
+func displayResult(result *simpleclient.MeasurementResult) {
+	fmt.Println("Delay: %s", result.Delay)
+	fmt.Println("Offset: %s", result.Offset)
+	fmt.Println("ServerToClientDiff: %s", result.ServerToClientDiff)
+	fmt.Println("ClientToServerDiff: %s", result.ClientToServerDiff)
+	fmt.Println("Timestamp: %s", result.Timestamp)
 }
