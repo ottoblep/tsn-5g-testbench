@@ -1,5 +1,5 @@
-# We reuse the base image from free5gc since it already includes a go build env and networking tools
-FROM free5gc-base as ptp-client 
+# Unfortunately we need a newer go version than free5gc
+FROM golang:1.21.10-bullseye AS ptp-client 
 
 # Build PTP-Client 
 COPY . /ptp-client
