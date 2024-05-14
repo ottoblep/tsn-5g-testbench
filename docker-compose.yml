@@ -294,39 +294,28 @@ services:
   ptp-master: # Base Station Side
     profiles: ["ptpsim"]
     container_name: ptp-master 
-    # We update the origin timestamp to the current time to avoid overflow in the correction field
-    command: >
-      bash -c " while true; do
-        printf '%x\n' $(date +%s) | xxd -p -r | dd of=/ptpv2_sync.pcap bs=1 seek=118 conv=notrunc >/dev/null
-        tcpreplay -i eth0 /ptpv2_sync.pcap
-        sleep 1s
-      done
-      "
+    image: ptp-server
+    command: /ptp-server/ptp-server
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
     cap_add:
       - NET_ADMIN
     build:
-      context: ./docker/ptp-emulator
+      context: ./docker/ptp-server
 
   ptp-slave: # UE Side
     profiles: ["ptpsim"]
     container_name: ptp-slave 
-    command: >
-      bash -c " while true; do
-        printf '%x\n' $(date +%s) | xxd -p -r | dd of=/ptpv2_delay_req.pcap bs=1 seek=118 conv=notrunc >/dev/null
-        tcpreplay -i eth0 /ptpv2_delay_req.pcap
-        sleep 1s
-      done
-      "
+    image: ptp-client
+    command: /ptp-client/ptp-client
     networks:
       tsn-bridge-out:
         ipv4_address: 10.100.202.200
     cap_add:
       - NET_ADMIN
     build:
-      context: ./docker/ptp-emulator
+      context: ./docker/ptp-client
 
 networks:
   5gs-bridge:

@@ -1,8 +1,8 @@
 echo "Bringing up 5g system" &&
 docker compose --profile 5gs up -d &&
 
-echo "Waiting 20s for data session establishment and gtp tunnel creation" &&
-sleep 20 &&
+echo "Waiting 15s for data session establishment and gtp tunnel creation" &&
+sleep 15 &&
 
 echo "Launching ptp containers" &&
 docker compose --profile ptpsim up -d &&
