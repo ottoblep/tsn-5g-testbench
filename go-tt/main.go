@@ -76,8 +76,10 @@ func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 
 	fmt.Println("TT: initialization complete")
 
+	// For some reason both multicast connections pick up all multicast packets instead of only their group as specified in https://pkg.go.dev/net#ListenMulticastUDP
+	// As such one of them is sufficient for listening
 	go ListenIncoming(non_peer_mc_conn, fivegs_conn, fivegs_opponent_addr)
-	go ListenIncoming(peer_mc_conn, fivegs_conn, fivegs_opponent_addr)
+	// go ListenIncoming(peer_mc_conn, fivegs_conn, fivegs_opponent_addr) 
 	go ListenOutgoing(fivegs_conn, peer_mc_conn, non_peer_mc_conn, peer_addr, non_peer_addr)
 
 	// TODO: Could use a WaitGroup instead of loop
