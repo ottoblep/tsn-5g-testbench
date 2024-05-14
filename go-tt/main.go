@@ -52,13 +52,13 @@ func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 		return
 	}
 
-	peer_mc_conn, err := net.ListenMulticastUDP("udp", port_interface, peer_addr)
+	peer_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, peer_addr)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	non_peer_mc_conn, err := net.ListenMulticastUDP("udp", port_interface, non_peer_addr)
+	non_peer_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, non_peer_addr)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -71,16 +71,16 @@ func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 	}
 
 	defer fivegs_conn.Close()
-	defer peer_mc_conn.Close()
-	defer non_peer_mc_conn.Close()
+	defer peer_multicast_conn.Close()
+	defer non_peer_multicast_conn.Close()
 
 	fmt.Println("TT: initialization complete")
 
 	// For some reason both multicast connections pick up all multicast packets instead of only their group as specified in https://pkg.go.dev/net#ListenMulticastUDP
 	// As such one of them is sufficient for listening
-	go ListenIncoming(non_peer_mc_conn, fivegs_conn, fivegs_opponent_addr)
-	// go ListenIncoming(peer_mc_conn, fivegs_conn, fivegs_opponent_addr) 
-	go ListenOutgoing(fivegs_conn, peer_mc_conn, non_peer_mc_conn, peer_addr, non_peer_addr)
+	go ListenIncoming(non_peer_multicast_conn, fivegs_conn, fivegs_opponent_addr)
+	// go ListenIncoming(peer_multicast_conn, fivegs_conn, fivegs_opponent_addr)
+	go ListenOutgoing(fivegs_conn, peer_multicast_conn, non_peer_multicast_conn, peer_addr, non_peer_addr)
 
 	// TODO: Could use a WaitGroup instead of loop
 	for {
@@ -88,10 +88,10 @@ func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 	}
 }
 
-func ListenIncoming(mc_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_opponent_addr *net.UDPAddr) {
+func ListenIncoming(multicast_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_opponent_addr *net.UDPAddr) {
 	b := make([]byte, 1024)
 	for {
-		_, _, err := mc_conn.ReadFrom(b)
+		_, _, err := multicast_conn.ReadFrom(b)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
@@ -107,7 +107,7 @@ func ListenIncoming(mc_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_oppon
 	}
 }
 
-func ListenOutgoing(fivegs_conn *net.UDPConn, peer_mc_conn *net.UDPConn, non_peer_mc_conn *net.UDPConn, peer_addr *net.UDPAddr, non_peer_addr *net.UDPAddr) {
+func ListenOutgoing(fivegs_conn *net.UDPConn, peer_multicast_conn *net.UDPConn, non_peer_multicast_conn *net.UDPConn, peer_addr *net.UDPAddr, non_peer_addr *net.UDPAddr) {
 	b := make([]byte, 1024)
 
 	for {
@@ -120,7 +120,7 @@ func ListenOutgoing(fivegs_conn *net.UDPConn, peer_mc_conn *net.UDPConn, non_pee
 		case protocol.MessagePDelayReq, protocol.MessagePDelayResp, protocol.MessagePDelayRespFollowUp:
 			{
 				fmt.Println("TT: sending out peer packet coming from 5gs bridge")
-				_, err = peer_mc_conn.WriteToUDP(b, peer_addr)
+				_, err = peer_multicast_conn.WriteToUDP(b, peer_addr)
 			}
 		case 255:
 			{
@@ -129,7 +129,7 @@ func ListenOutgoing(fivegs_conn *net.UDPConn, peer_mc_conn *net.UDPConn, non_pee
 		default:
 			{
 				fmt.Println("TT: sending out non-peer packet coming from 5gs bridge")
-				_, err = non_peer_mc_conn.WriteToUDP(b, non_peer_addr)
+				_, err = non_peer_multicast_conn.WriteToUDP(b, non_peer_addr)
 			}
 		}
 
