@@ -1,4 +1,4 @@
-# tan-5g-testbench
+# tsn-5g-testbench
 
 A software emulated 5G-TSN bridge system.
 
@@ -20,7 +20,7 @@ A software emulated 5G-TSN bridge system.
     - [ ] Transparent Clock
         - [x] External PTP traffic simulation (static packets)
         - [x] E2E delay measurement and packet update
-        - [ ] validate transparent clock functionality 
+        - [ ] Full PTP emulation for validating transparent clock functionality 
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
         - [ ] QoS setting / mapping
