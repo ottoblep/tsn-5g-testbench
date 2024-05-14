@@ -295,7 +295,7 @@ services:
     profiles: ["ptpsim"]
     container_name: ptp-master 
     image: ptp-server
-    command: /ptp-server/ptp-server
+    command: /ptp-server/ptp-server -iface eth0 -loglevel info -timestamptype software
     networks:
       tsn-bridge-in:
         ipv4_address: 10.100.201.200
@@ -308,7 +308,7 @@ services:
     profiles: ["ptpsim"]
     container_name: ptp-slave 
     image: ptp-client
-    command: /ptp-client/ptp-client
+    command: /ptp-client/ptp-client -serv_ip 10.200.202.100 -if eth0
     networks:
       tsn-bridge-out:
         ipv4_address: 10.100.202.200
