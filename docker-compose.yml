@@ -320,14 +320,12 @@ services:
 networks:
   5gs-bridge:
     ipam:
-      driver: default
       config:
         - subnet: 10.100.200.0/24
     driver_opts:
       com.docker.network.bridge.name: 5gs-br
 
   tsn-bridge-in: # Base Station Side
-    driver: macvlan
     ipam:
       config:
         - subnet: 10.100.201.0/24
@@ -335,7 +333,6 @@ networks:
       com.docker.network.bridge.name: tsn-br-in 
 
   tsn-bridge-out: # UE Side
-    driver: macvlan
     ipam:
       config:
         - subnet: 10.100.202.0/24
