@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	server_addr := flag.String("serv_ip", "10.200.202.100", "PTP-Server Address (in this case forwarded by the bridge)")
+	server_addr := flag.String("serv_ip", "10.100.202.100", "PTP-Server Address (in this case forwarded by the bridge)")
 	ifname := flag.String("if", "eth0", "interface name to send/receive packets")
 	flag.Parse()
 

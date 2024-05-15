@@ -9,27 +9,19 @@ import (
 )
 
 func main() {
-	port_interface_name := flag.String("portif", "eth1", "Interface of TT bridge outside port")
-	gtp_tun_ip_opponent := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
+	// The term "port" such as in "port_interface" refers to the outside connections of TSN bridge which normally are ethernet ports
+	gtp_tun_opponent_addr_string := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
+	enable_unicast := flag.Bool("unicast", false, "Switch operation from multicast to unicast")
+	port_interface_name := flag.String("portif", "eth1", "Interface of TT bridge outside port (only used with multicast)")
+	unicast_addr_string := flag.String("unicastip", "10.100.201.200", "IP of the connected PTP client/server (only used with unicast)")
 	flag.Parse()
-	TtListen(*port_interface_name, *gtp_tun_ip_opponent)
+	TtListen(*port_interface_name, *gtp_tun_opponent_addr_string, *enable_unicast, *unicast_addr_string)
 }
 
-func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
-	// Receives PTP messages via multicast 224.0.0.107 or 224.0.1.129 with ip port 319
-	// Forwards packets via 5GS or sends multicast to outside
-	// Updates the correction field of PTP packets passing through the 5GS
-	// The term "port" such as in "port_interface" refers to the outside connections of TSN bridge which normally are ethernet ports
-
-	port_interface, err := net.InterfaceByName(port_interface_name)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	// Internal 5GS connection
+func TtListen(port_interface_name string, gtp_tun_opponent_addr_string string, enable_unicast bool, unicast_addr_string string) {
+	// Setup Internal 5GS connection
 	// IP port 50000 is arbitrarily chosen to communicate between UE and UPF because the multicast is bound to 319
-	fivegs_opponent_addr, err := net.ResolveUDPAddr("udp", gtp_tun_ip_opponent+":50000")
+	fivegs_opponent_addr, err := net.ResolveUDPAddr("udp", gtp_tun_opponent_addr_string+":50000")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -42,78 +34,93 @@ func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 		return
 	}
 
-	// Unicast Outside Connections
-	// event_unicast_addr, err := net.ResolveUDPAddr("udp", ":319")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return
-	// }
-
-	// general_unicast_addr, err := net.ResolveUDPAddr("udp", ":320")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return
-	// }
-
-	// event_unicast_conn , err := net.ListenUDP("udp", event_unicast_addr)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return
-	// }
-
-	// general_unicast_conn , err := net.ListenUDP("udp", general_unicast_addr)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return
-	// }
-
-	// Multicast Outside Connections
-	peer_event_addr, _ := net.ResolveUDPAddr("udp", "224.0.0.107:319")
-	peer_general_addr, _ := net.ResolveUDPAddr("udp", "224.0.0.107:320")
-	non_peer_event_addr, _ := net.ResolveUDPAddr("udp", "224.0.1.129:319")
-	non_peer_general_addr, _ := net.ResolveUDPAddr("udp", "224.0.1.129:320")
-
-	peer_general_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, peer_general_addr)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	peer_event_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, peer_event_addr)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	non_peer_general_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, non_peer_general_addr)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	non_peer_event_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, non_peer_event_addr)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
 	defer fivegs_conn.Close()
-	defer peer_general_multicast_conn.Close()
-	defer peer_event_multicast_conn.Close()
-	defer non_peer_event_multicast_conn.Close()
-	defer non_peer_general_multicast_conn.Close()
-	// defer event_unicast_conn.Close()
-	// defer general_unicast_conn.Close()
+
+	if enable_unicast {
+		// Setup Unicast Outside Connections
+		unicast_general_addr, err := net.ResolveUDPAddr("udp", unicast_addr_string+":320")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		unicast_event_addr, err := net.ResolveUDPAddr("udp", unicast_addr_string+":319")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		unicast_listen_general_addr, _ := net.ResolveUDPAddr("udp", ":320")
+		unicast_listen_event_addr, _ := net.ResolveUDPAddr("udp", ":319")
+
+		unicast_general_conn, err := net.ListenUDP("udp", unicast_listen_general_addr)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		unicast_event_conn, err := net.ListenUDP("udp", unicast_listen_event_addr)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		defer unicast_event_conn.Close()
+		defer unicast_general_conn.Close()
+
+		go ListenIncoming(unicast_event_conn, fivegs_conn, fivegs_opponent_addr)
+		go ListenIncoming(unicast_general_conn, fivegs_conn, fivegs_opponent_addr)
+		go ListenOutgoingUnicast(fivegs_conn, unicast_general_conn, unicast_event_conn, unicast_general_addr, unicast_event_addr)
+	} else {
+		// Setup Multicast Outside Connections
+		port_interface, err := net.InterfaceByName(port_interface_name)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		peer_general_addr, _ := net.ResolveUDPAddr("udp", "224.0.0.107:320")
+		peer_event_addr, _ := net.ResolveUDPAddr("udp", "224.0.0.107:319")
+		non_peer_general_addr, _ := net.ResolveUDPAddr("udp", "224.0.1.129:320")
+		non_peer_event_addr, _ := net.ResolveUDPAddr("udp", "224.0.1.129:319")
+
+		peer_general_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, peer_general_addr)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		peer_event_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, peer_event_addr)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		non_peer_general_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, non_peer_general_addr)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		non_peer_event_multicast_conn, err := net.ListenMulticastUDP("udp", port_interface, non_peer_event_addr)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		defer peer_general_multicast_conn.Close()
+		defer peer_event_multicast_conn.Close()
+		defer non_peer_general_multicast_conn.Close()
+		defer non_peer_event_multicast_conn.Close()
+
+		// For some reason both multicast connections pick up all multicast packets (peer and non-peer) instead of only their group as specified in https://pkg.go.dev/net#ListenMulticastUDP
+		// As such one listener is sufficient per port
+		go ListenIncoming(non_peer_general_multicast_conn, fivegs_conn, fivegs_opponent_addr)
+		go ListenIncoming(non_peer_event_multicast_conn, fivegs_conn, fivegs_opponent_addr)
+		go ListenOutgoingMulticast(fivegs_conn,
+			peer_general_multicast_conn, peer_event_multicast_conn,
+			non_peer_general_multicast_conn, non_peer_event_multicast_conn,
+			peer_general_addr, peer_event_addr,
+			non_peer_general_addr, non_peer_event_addr,
+		)
+	}
 
 	fmt.Println("TT: initialization complete")
-
-	// For some reason both multicast connections pick up all multicast packets (peer and non-peer) instead of only their group as specified in https://pkg.go.dev/net#ListenMulticastUDP
-	// As such one listener is sufficient per port
-	go ListenIncoming(non_peer_general_multicast_conn, fivegs_conn, fivegs_opponent_addr)
-	go ListenIncoming(non_peer_event_multicast_conn, fivegs_conn, fivegs_opponent_addr)
-	go ListenOutgoing(fivegs_conn,
-		peer_general_multicast_conn, peer_event_multicast_conn,
-		non_peer_general_multicast_conn, non_peer_event_multicast_conn,
-		peer_general_addr, peer_event_addr,
-		non_peer_general_addr, non_peer_event_addr,
-	)
 
 	// TODO: Could use a WaitGroup instead of loop
 	for {
@@ -121,16 +128,16 @@ func TtListen(port_interface_name string, gtp_tun_ip_opponent string) {
 	}
 }
 
-func ListenIncoming(multicast_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_opponent_addr *net.UDPAddr) {
+func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_opponent_addr *net.UDPAddr) {
 	b := make([]byte, 1024)
 	for {
-		_, _, err := multicast_conn.ReadFrom(b)
+		_, _, err := listen_conn.ReadFrom(b)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
 
-		fmt.Println("TT: received a multicast ptp message")
+		fmt.Println("TT: received packet")
 		_, b = HandlePacket(true, b)
 
 		_, err = fivegs_conn.WriteToUDP(b, fivegs_opponent_addr)
@@ -140,15 +147,42 @@ func ListenIncoming(multicast_conn *net.UDPConn, fivegs_conn *net.UDPConn, fiveg
 	}
 }
 
-func ListenOutgoing(fivegs_conn *net.UDPConn,
-	peer_general_multicast_conn *net.UDPConn,
-	peer_event_multicast_conn *net.UDPConn,
-	non_peer_general_multicast_conn *net.UDPConn,
-	non_peer_event_multicast_conn *net.UDPConn,
-	peer_general_addr *net.UDPAddr,
-	peer_event_addr *net.UDPAddr,
-	non_peer_general_addr *net.UDPAddr,
-	non_peer_event_addr *net.UDPAddr) {
+func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.UDPConn, unicast_event_conn *net.UDPConn, unicast_general_addr *net.UDPAddr, unicast_event_addr *net.UDPAddr) {
+	b := make([]byte, 1024)
+	for {
+		_, _, err := fivegs_conn.ReadFromUDP(b)
+
+		msg_type, b := HandlePacket(false, b)
+
+		switch msg_type {
+		// Outgoing split by: port 320 or 319
+		case protocol.MessageSync, protocol.MessageDelayReq, protocol.MessagePDelayReq, protocol.MessagePDelayResp: // Port 319 event
+			{
+				fmt.Println("TT: sending out unicast event packet coming from 5gs bridge")
+				_, err = unicast_event_conn.WriteToUDP(b, unicast_event_addr)
+			}
+		case protocol.MessageAnnounce, protocol.MessageFollowUp, protocol.MessageDelayResp, protocol.MessageSignaling, protocol.MessageManagement, protocol.MessagePDelayRespFollowUp: // Port 320 general
+			{
+				fmt.Println("TT: sending out unicast general packet coming from 5gs bridge")
+				_, err = unicast_general_conn.WriteToUDP(b, unicast_general_addr)
+			}
+		default:
+			{
+				fmt.Println("TT: dropping unknown type or non-PTP packet")
+			}
+		}
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+}
+
+func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
+	peer_general_multicast_conn *net.UDPConn, peer_event_multicast_conn *net.UDPConn,
+	non_peer_general_multicast_conn *net.UDPConn, non_peer_event_multicast_conn *net.UDPConn,
+	peer_general_addr *net.UDPAddr, peer_event_addr *net.UDPAddr,
+	non_peer_general_addr *net.UDPAddr, non_peer_event_addr *net.UDPAddr) {
 
 	b := make([]byte, 1024)
 
@@ -158,34 +192,30 @@ func ListenOutgoing(fivegs_conn *net.UDPConn,
 		msg_type, b := HandlePacket(false, b)
 
 		switch msg_type {
-		// Outgoing split by: Multicast or Unicast, port 320 or 319, multicast 0.107 or 1.129
+		// Outgoing split by: port 320 or 319, multicast 0.107 or 1.129
 		case protocol.MessageSync, protocol.MessageDelayReq: // Port 319 event, 224.0.1.129 non-peer
 			{
-				fmt.Println("TT: sending out non-peer event packet coming from 5gs bridge")
+				fmt.Println("TT: sending out multicast non-peer event packet coming from 5gs bridge")
 				_, err = non_peer_event_multicast_conn.WriteToUDP(b, non_peer_event_addr)
 			}
 		case protocol.MessagePDelayReq, protocol.MessagePDelayResp: // Port 319 event, 224.0.0.107 peer
 			{
-				fmt.Println("TT: sending out peer event packet coming from 5gs bridge")
+				fmt.Println("TT: sending out multicast peer event packet coming from 5gs bridge")
 				_, err = peer_event_multicast_conn.WriteToUDP(b, peer_event_addr)
 			}
 		case protocol.MessageAnnounce, protocol.MessageFollowUp, protocol.MessageDelayResp, protocol.MessageSignaling, protocol.MessageManagement: // Port 320 general, 224.0.1.129 non-peer
 			{
-				fmt.Println("TT: sending out non-peer general packet coming from 5gs bridge")
+				fmt.Println("TT: sending out multicast non-peer general packet coming from 5gs bridge")
 				_, err = non_peer_general_multicast_conn.WriteToUDP(b, non_peer_general_addr)
 			}
 		case protocol.MessagePDelayRespFollowUp: // Port 320 general, 224.0.0.107 peer
 			{
-				fmt.Println("TT: sending out peer general packet coming from 5gs bridge")
+				fmt.Println("TT: sending out multicast peer general packet coming from 5gs bridge")
 				_, err = peer_general_multicast_conn.WriteToUDP(b, peer_general_addr)
-			}
-		case 255:
-			{
-				fmt.Println("TT: dropping non-PTP packet")
 			}
 		default:
 			{
-				fmt.Println("TT: dropping unknown PTP packet type")
+				fmt.Println("TT: dropping unknown type or non-PTP packet")
 			}
 		}
 
@@ -215,6 +245,10 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 		{
 			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
 			raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
+		}
+	default: 
+		{
+			fmt.Println("TT: no modification of PTP packet required")
 		}
 	}
 
