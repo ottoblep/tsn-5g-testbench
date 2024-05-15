@@ -291,9 +291,9 @@ services:
         timeout: 5s
         retries: 5
 
-  ptp-master: # Base Station Side
+  ptp-server: # Base Station Side
     profiles: ["ptpsim"]
-    container_name: ptp-master 
+    container_name: ptp-server 
     image: ptp-server
     command: /ptp-server/ptp-server -iface eth0 -loglevel info -timestamptype software
     networks:
@@ -304,9 +304,9 @@ services:
     build:
       context: ./docker/ptp-server
 
-  ptp-slave: # UE Side
+  ptp-client: # UE Side
     profiles: ["ptpsim"]
-    container_name: ptp-slave 
+    container_name: ptp-client 
     image: ptp-client
     command: /ptp-client/ptp-client -serv_ip 10.200.202.100 -if eth0
     networks:
