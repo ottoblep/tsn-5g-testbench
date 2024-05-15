@@ -15,8 +15,8 @@ func main() {
 	cfg := &simpleclient.Config{
 		Address: *server_addr,
 		Iface: *ifname,
-		Timeout: 1 * time.Second,
-		Duration: 1 * time.Minute,
+		Timeout: 1 * time.Minute,
+		Duration: 30 * time.Minute,
 		Timestamping: 0, // = Software https://pkg.go.dev/github.com/facebook/time/timestamp#Timestamp
 	}
 
