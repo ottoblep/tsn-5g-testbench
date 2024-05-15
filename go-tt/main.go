@@ -26,6 +26,7 @@ func TtListen(port_interface_name string, gtp_tun_opponent_addr_string string, e
 		fmt.Println(err.Error())
 		return
 	}
+
 	fivegs_addr, _ := net.ResolveUDPAddr("udp", ":50000")
 
 	fivegs_conn, err := net.ListenUDP("udp4", fivegs_addr)
@@ -137,9 +138,10 @@ func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_o
 			continue
 		}
 
-		fmt.Println("TT: received packet")
+		fmt.Println("TT: received packet from outside port")
 		_, b = HandlePacket(true, b)
 
+		fmt.Println("TT: sending packet via 5GS")
 		_, err = fivegs_conn.WriteToUDP(b, fivegs_opponent_addr)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -150,7 +152,7 @@ func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_o
 func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.UDPConn, unicast_event_conn *net.UDPConn, unicast_general_addr *net.UDPAddr, unicast_event_addr *net.UDPAddr) {
 	b := make([]byte, 1024)
 	for {
-		_, _, err := fivegs_conn.ReadFromUDP(b)
+	_, _, err := fivegs_conn.ReadFromUDP(b)
 
 		msg_type, b := HandlePacket(false, b)
 
@@ -158,12 +160,12 @@ func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.U
 		// Outgoing split by: port 320 or 319
 		case protocol.MessageSync, protocol.MessageDelayReq, protocol.MessagePDelayReq, protocol.MessagePDelayResp: // Port 319 event
 			{
-				fmt.Println("TT: sending out unicast event packet coming from 5gs bridge")
+				fmt.Println("TT: sending unicast event packet to outside port")
 				_, err = unicast_event_conn.WriteToUDP(b, unicast_event_addr)
 			}
 		case protocol.MessageAnnounce, protocol.MessageFollowUp, protocol.MessageDelayResp, protocol.MessageSignaling, protocol.MessageManagement, protocol.MessagePDelayRespFollowUp: // Port 320 general
 			{
-				fmt.Println("TT: sending out unicast general packet coming from 5gs bridge")
+				fmt.Println("TT: sending unicast general packet to outside port")
 				_, err = unicast_general_conn.WriteToUDP(b, unicast_general_addr)
 			}
 		default:
@@ -195,22 +197,22 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 		// Outgoing split by: port 320 or 319, multicast 0.107 or 1.129
 		case protocol.MessageSync, protocol.MessageDelayReq: // Port 319 event, 224.0.1.129 non-peer
 			{
-				fmt.Println("TT: sending out multicast non-peer event packet coming from 5gs bridge")
+				fmt.Println("TT: sending multicast non-peer event packet to outside port")
 				_, err = non_peer_event_multicast_conn.WriteToUDP(b, non_peer_event_addr)
 			}
 		case protocol.MessagePDelayReq, protocol.MessagePDelayResp: // Port 319 event, 224.0.0.107 peer
 			{
-				fmt.Println("TT: sending out multicast peer event packet coming from 5gs bridge")
+				fmt.Println("TT: sending multicast peer event packet to outside port")
 				_, err = peer_event_multicast_conn.WriteToUDP(b, peer_event_addr)
 			}
 		case protocol.MessageAnnounce, protocol.MessageFollowUp, protocol.MessageDelayResp, protocol.MessageSignaling, protocol.MessageManagement: // Port 320 general, 224.0.1.129 non-peer
 			{
-				fmt.Println("TT: sending out multicast non-peer general packet coming from 5gs bridge")
+				fmt.Println("TT: sending multicast non-peer general packet to outside port")
 				_, err = non_peer_general_multicast_conn.WriteToUDP(b, non_peer_general_addr)
 			}
 		case protocol.MessagePDelayRespFollowUp: // Port 320 general, 224.0.0.107 peer
 			{
-				fmt.Println("TT: sending out multicast peer general packet coming from 5gs bridge")
+				fmt.Println("TT: sending multicast peer general packet to outside port")
 				_, err = peer_general_multicast_conn.WriteToUDP(b, peer_general_addr)
 			}
 		default:
@@ -238,11 +240,13 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 	switch pkt_ptr := parsed_pkt.(type) {
 	case *protocol.SyncDelayReq:
 		{
+			fmt.Println("TT: updating correction field")
 			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).SyncDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
 			raw_pkt, err = (*pkt_ptr).MarshalBinary()
 		}
 	case *protocol.PDelayReq:
 		{
+			fmt.Println("TT: updating correction field")
 			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
 			raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
 		}
