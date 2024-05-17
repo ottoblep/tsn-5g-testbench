@@ -26,9 +26,9 @@ func main() {
 }
 
 func displayResult(result *simpleclient.MeasurementResult) {
-	fmt.Println("Delay: %s", result.Delay)
-	fmt.Println("Offset: %s", result.Offset)
-	fmt.Println("ServerToClientDiff: %s", result.ServerToClientDiff)
-	fmt.Println("ClientToServerDiff: %s", result.ClientToServerDiff)
-	fmt.Println("Timestamp: %s", result.Timestamp)
+	fmt.Println("Delay: ", result.Delay)
+	fmt.Println("Offset: ", result.Offset)
+	fmt.Println("ServerToClientDiff: ", result.ServerToClientDiff)
+	fmt.Println("ClientToServerDiff: ", result.ClientToServerDiff)
+	fmt.Println("Timestamp: ", result.Timestamp)
 }
