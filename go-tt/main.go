@@ -131,6 +131,7 @@ func TtListen(port_interface_name string, gtp_tun_addr_string string, gtp_tun_op
 
 func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_addr *net.UDPAddr) {
 	b := make([]byte, 1024)
+	unused_correction := protocol.NewCorrection(0)
 	for {
 		_, _, err := listen_conn.ReadFrom(b)
 		if err != nil {
@@ -139,7 +140,8 @@ func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_a
 		}
 
 		fmt.Println("TT: received packet from outside port")
-		_, b = HandlePacket(true, b)
+
+		_, b, _ := HandlePacket(true, b, unused_correction)
 
 		fmt.Println("TT: sending packet via 5GS")
 		_, err = fivegs_conn.WriteToUDP(b, fivegs_addr)
@@ -151,10 +153,13 @@ func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_a
 
 func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.UDPConn, unicast_event_conn *net.UDPConn, unicast_general_addr *net.UDPAddr, unicast_event_addr *net.UDPAddr) {
 	b := make([]byte, 1024)
-	for {
-	_, _, err := fivegs_conn.ReadFromUDP(b)
+	last_sync_residence_time := protocol.NewCorrection(0)
+	var msg_type protocol.MessageType
 
-		msg_type, b := HandlePacket(false, b)
+	for {
+		_, _, err := fivegs_conn.ReadFromUDP(b)
+
+		msg_type, b, last_sync_residence_time = HandlePacket(false, b, last_sync_residence_time)
 
 		switch msg_type {
 		// Outgoing split by: port 320 or 319
@@ -187,11 +192,13 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 	non_peer_general_addr *net.UDPAddr, non_peer_event_addr *net.UDPAddr) {
 
 	b := make([]byte, 1024)
+	last_sync_residence_time := protocol.NewCorrection(0)
+	var msg_type protocol.MessageType
 
 	for {
 		_, _, err := fivegs_conn.ReadFromUDP(b)
 
-		msg_type, b := HandlePacket(false, b)
+		msg_type, b, last_sync_residence_time = HandlePacket(false, b, last_sync_residence_time)
 
 		switch msg_type {
 		// Outgoing split by: port 320 or 319, multicast 0.107 or 1.129
@@ -227,29 +234,48 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 	}
 }
 
-func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) {
+func HandlePacket(incoming bool, raw_pkt []byte, last_sync_residence_time protocol.Correction) (protocol.MessageType, []byte, protocol.Correction) {
 	// Act as transparent clock
+	// We want to support both two step and one step transparent clock operation so we keep the last sync residence time around
+	// Peer to peer mode is not supported
 
 	// Attempt to parse possible PTP packet
 	parsed_pkt, err := protocol.DecodePacket(raw_pkt)
 	if err != nil {
-		return 255, raw_pkt
+		return 255, raw_pkt, last_sync_residence_time
 	}
 
 	// Type switch into ptp packet types
 	switch pkt_ptr := parsed_pkt.(type) {
 	case *protocol.SyncDelayReq:
 		{
-			fmt.Println("TT: updating correction field")
+			fmt.Println("TT: updating sync / delay-request correction field")
 			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).SyncDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
+			if !incoming && (*pkt_ptr).Header.MessageType() == protocol.MessageSync {
+				last_sync_residence_time = (*pkt_ptr).Header.CorrectionField
+			}
 			raw_pkt, err = (*pkt_ptr).MarshalBinary()
 		}
-	case *protocol.PDelayReq:
+	case *protocol.FollowUp:
 		{
-			fmt.Println("TT: updating correction field")
-			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
-			raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
+			if !incoming {
+				fmt.Println("TT: updating follow up correction field with delay from last sync")
+				(*pkt_ptr).Header.CorrectionField = last_sync_residence_time 
+				raw_pkt, err = (*pkt_ptr).MarshalBinary()
+			}
 		}
+	// case *protocol.PDelayReq:
+	// 	{
+	// 		fmt.Println("TT: updating peer delay request correction field")
+	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
+	// 		raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
+	// 	}
+	// case *protocol.PDelayResp:
+	// 	{
+	// 		fmt.Println("TT: updating peer delay response correction field")
+	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayRespBody.RequestReceiptTimestamp, (*pkt_ptr).Header.CorrectionField)
+	// 		raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
+	// 	}
 	default: 
 		{
 			fmt.Println("TT: no modification of PTP packet required")
@@ -260,7 +286,7 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 		fmt.Println(err.Error())
 	}
 
-	return parsed_pkt.MessageType(), raw_pkt
+	return parsed_pkt.MessageType(), raw_pkt, last_sync_residence_time
 }
 
 func CalculateCorrection(incoming bool, originTimestamp protocol.Timestamp, correctionField protocol.Correction) protocol.Correction {
@@ -279,7 +305,7 @@ func CalculateCorrection(incoming bool, originTimestamp protocol.Timestamp, corr
 		ns_since_origin_timestamp_at_ingress := correctionField.Nanoseconds()
 		residence_time := ns_since_origin_timestamp - ns_since_origin_timestamp_at_ingress
 		if residence_time <= 0 {
-			fmt.Println("TT: computed negative residence time ", residence_time, ", are the tt's clocks synchronized?")
+			fmt.Println("TT: computed nonsense residence time ", residence_time, ", are the tt's clocks synchronized?")
 			residence_time = 0
 		}
 		return protocol.NewCorrection(residence_time)
