@@ -279,7 +279,7 @@ func CalculateCorrection(incoming bool, originTimestamp protocol.Timestamp, corr
 		ns_since_origin_timestamp_at_ingress := correctionField.Nanoseconds()
 		residence_time := ns_since_origin_timestamp - ns_since_origin_timestamp_at_ingress
 		if residence_time <= 0 {
-			fmt.Println("TT: computed negative residence time, are the tt's clocks synchronized?")
+			fmt.Println("TT: computed negative residence time ", residence_time, ", are the tt's clocks synchronized?")
 			residence_time = 0
 		}
 		return protocol.NewCorrection(residence_time)
