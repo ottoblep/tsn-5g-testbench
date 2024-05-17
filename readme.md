@@ -17,10 +17,9 @@ A software emulated 5G-TSN bridge system.
     - [x] PDU Session Establishment
     - [x] IP Traffic
 - **TSN** 
-    - [ ] Transparent Clock
-        - [x] External PTP traffic simulation (static packets)
+    - [x] Transparent Clock
         - [x] E2E delay measurement and packet update
-        - [ ] Full PTP emulation for validating transparent clock functionality 
+        - [x] Full PTP emulation for validating transparent clock functionality 
     - [ ] Boundary Clock
         - [ ] External TSN network simulation
         - [ ] QoS setting / mapping
