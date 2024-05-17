@@ -87,7 +87,7 @@ docker exec upf ping -c 5 10.60.0.1 # Downlink ping
 ```
 
 ### Run 5GS + PTP Emulation
-Two additional containers will send setup a unicast ptp server and client using [Facebook's PTP library](https://pkg.go.dev/github.com/facebook/time/ptp).
+Two additional containers will setup a unicast ptp server and client using [Facebook's PTP library](https://pkg.go.dev/github.com/facebook/time/ptp).
 ```bash
 ./scripts/launch_ptp_emulation.sh
 ```
