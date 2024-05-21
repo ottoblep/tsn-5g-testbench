@@ -8,6 +8,8 @@ A software emulated 5G-TSN bridge system.
 - **UE** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with RF Simulator
 - **gNB** [OAI](https://gitlab.eurecom.fr/oai/openairinterface5g) with RF Simulator
 - **CN** [Free5GC](https://github.com/free5gc/free5gc)
+- **DS-TT/NW-TT** [minimal go implementation](go-tt/main.go)
+- **Software-PTP** [PTP4U + Simpleclient](https://github.com/facebook/time/tree/main/ptp)
 
 ## Progress
 - **5GS** 
