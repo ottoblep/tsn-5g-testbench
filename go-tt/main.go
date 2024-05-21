@@ -7,6 +7,15 @@ import (
 	"net"
 	"time"
 	"unsafe"
+	"sync"
+)
+
+// Variables shared by the listeners
+var (
+    last_sync_residence_time protocol.Correction
+    last_sync_residence_time_mutex sync.Mutex
+    last_delayreq_residence_time protocol.Correction
+    last_delayreq_residence_time_mutex sync.Mutex
 )
 
 func main() {
@@ -133,22 +142,19 @@ func TtListen(port_interface_name string, gtp_tun_addr_string string, gtp_tun_op
 }
 
 func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_addr *net.UDPAddr) {
-	unused_correction := protocol.NewCorrection(0)
 	var b []byte
 
 	for {
 		b = make([]byte, 1024)
 		_, _, err := listen_conn.ReadFrom(b)
+
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
 
-		fmt.Println("TT: received packet from outside port")
+		_, b := HandlePacket(true, b)
 
-		_, b, _ := HandlePacket(true, b, unused_correction)
-
-		fmt.Println("TT: sending packet via 5GS")
 		_, err = fivegs_conn.WriteToUDP(b, fivegs_addr)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -157,7 +163,6 @@ func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_a
 }
 
 func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.UDPConn, unicast_event_conn *net.UDPConn, unicast_general_addr *net.UDPAddr, unicast_event_addr *net.UDPAddr) {
-	last_residence_time := protocol.NewCorrection(0)
 	var msg_type protocol.MessageType
 	var b []byte
 
@@ -165,18 +170,16 @@ func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.U
 		b = make([]byte, 1024)
 		_, _, err := fivegs_conn.ReadFromUDP(b)
 
-		msg_type, b, last_residence_time = HandlePacket(false, b, last_residence_time)
+		msg_type, b = HandlePacket(false, b)
 
 		switch msg_type {
 		// Outgoing split by: port 320 or 319
 		case protocol.MessageSync, protocol.MessageDelayReq, protocol.MessagePDelayReq, protocol.MessagePDelayResp: // Port 319 event
 			{
-				fmt.Println("TT: sending unicast event packet to outside port")
 				_, err = unicast_event_conn.WriteToUDP(b, unicast_event_addr)
 			}
 		case protocol.MessageAnnounce, protocol.MessageFollowUp, protocol.MessageDelayResp, protocol.MessageSignaling, protocol.MessageManagement, protocol.MessagePDelayRespFollowUp: // Port 320 general
 			{
-				fmt.Println("TT: sending unicast general packet to outside port")
 				_, err = unicast_general_conn.WriteToUDP(b, unicast_general_addr)
 			}
 		default:
@@ -197,7 +200,6 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 	peer_general_addr *net.UDPAddr, peer_event_addr *net.UDPAddr,
 	non_peer_general_addr *net.UDPAddr, non_peer_event_addr *net.UDPAddr) {
 
-	last_residence_time := protocol.NewCorrection(0)
 	var msg_type protocol.MessageType
 	var b []byte
 
@@ -205,28 +207,24 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 		b = make([]byte, 1024)
 		_, _, err := fivegs_conn.ReadFromUDP(b)
 
-		msg_type, b, last_residence_time = HandlePacket(false, b, last_residence_time)
+		msg_type, b = HandlePacket(false, b)
 
 		switch msg_type {
 		// Outgoing split by: port 320 or 319, multicast 0.107 or 1.129
 		case protocol.MessageSync, protocol.MessageDelayReq: // Port 319 event, 224.0.1.129 non-peer
 			{
-				fmt.Println("TT: sending multicast non-peer event packet to outside port")
 				_, err = non_peer_event_multicast_conn.WriteToUDP(b, non_peer_event_addr)
 			}
 		case protocol.MessagePDelayReq, protocol.MessagePDelayResp: // Port 319 event, 224.0.0.107 peer
 			{
-				fmt.Println("TT: sending multicast peer event packet to outside port")
 				_, err = peer_event_multicast_conn.WriteToUDP(b, peer_event_addr)
 			}
 		case protocol.MessageAnnounce, protocol.MessageFollowUp, protocol.MessageDelayResp, protocol.MessageSignaling, protocol.MessageManagement: // Port 320 general, 224.0.1.129 non-peer
 			{
-				fmt.Println("TT: sending multicast non-peer general packet to outside port")
 				_, err = non_peer_general_multicast_conn.WriteToUDP(b, non_peer_general_addr)
 			}
 		case protocol.MessagePDelayRespFollowUp: // Port 320 general, 224.0.0.107 peer
 			{
-				fmt.Println("TT: sending multicast peer general packet to outside port")
 				_, err = peer_general_multicast_conn.WriteToUDP(b, peer_general_addr)
 			}
 		default:
@@ -241,7 +239,7 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 	}
 }
 
-func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Correction) (protocol.MessageType, []byte, protocol.Correction) {
+func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) {
 	// Act as transparent clock
 	// We want to support both two step and one step transparent clock operation 
 	// so we both update the Sync/DelayRequest correction fields directly (1-step) and store the residence for a possible FollowUp or DelayResponse (2-step)
@@ -251,7 +249,7 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Co
 	parsed_pkt, err := protocol.DecodePacket(raw_pkt)
 	if err != nil {
 		fmt.Println(err.Error())
-		return 255, raw_pkt, last_residence_time
+		return 255, raw_pkt
 	}
 
 	// Type switch into ptp packet types
@@ -261,23 +259,31 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Co
 			fmt.Println("TT: updating sync / delay-request correction field")
 			 (*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
 			if !incoming {
-				last_residence_time = (*pkt_ptr).Header.CorrectionField
+				if (*pkt_ptr).Header.MessageType() == protocol.MessageSync {
+					last_sync_residence_time_mutex.Lock()
+					last_sync_residence_time = (*pkt_ptr).Header.CorrectionField
+					last_sync_residence_time_mutex.Unlock()
+				} else {
+					last_delayreq_residence_time_mutex.Lock()
+					last_delayreq_residence_time = (*pkt_ptr).Header.CorrectionField
+					last_delayreq_residence_time_mutex.Unlock()
+				}
 			}
 			raw_pkt, err = (*pkt_ptr).MarshalBinary()
 		}
 	case *protocol.FollowUp:
 		{
 			if !incoming {
-				fmt.Println("TT: updating follow up correction field with delay from last sync")
-				(*pkt_ptr).Header.CorrectionField = last_residence_time 
+				fmt.Println("TT: updating follow up correction field with delay from last sync", last_sync_residence_time)
+				(*pkt_ptr).Header.CorrectionField = last_sync_residence_time 
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
 		}
 	case *protocol.DelayResp:
 		{
 			if incoming {
-				fmt.Println("TT: updating delay response correction field with delay from last delay request")
-				(*pkt_ptr).Header.CorrectionField = last_residence_time 
+				fmt.Println("TT: updating delay response correction field with delay from last delay request", last_delayreq_residence_time)
+				(*pkt_ptr).Header.CorrectionField = last_delayreq_residence_time 
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
 		}
@@ -287,7 +293,7 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Co
 		fmt.Println(err.Error())
 	}
 
-	return parsed_pkt.MessageType(), raw_pkt, last_residence_time
+	return parsed_pkt.MessageType(), raw_pkt
 }
 
 func CalculateCorrection(incoming bool, correctionField protocol.Correction) protocol.Correction {
