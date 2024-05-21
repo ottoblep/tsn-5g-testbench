@@ -102,3 +102,6 @@ The go-tt component is loaded into the UE and UPF via modified docker files.
 To simplify dealing with the different ecosystems of OAI and Free5GC on our host machine we can develop applications directly inside the provided containers.
 An example is the VSCode extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
 It lets you seamlessly step into any container environment.
+
+To examine traffic through the 5G tunnel in detail it is possible to monitor all interfaces with wireshark.
+For example, PTP traffic can be monitored on the tsn-bridge-in and ts-bridge-out interfaces while the GTP encapsulated PTP packets inside the gtp tunnel can be monitored on one of the container veths.
