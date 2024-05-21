@@ -6,6 +6,7 @@ import (
 	"github.com/facebook/time/ptp/protocol"
 	"net"
 	"time"
+	"unsafe"
 )
 
 func main() {
@@ -250,7 +251,7 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_sync_residence_time protoc
 	case *protocol.SyncDelayReq:
 		{
 			fmt.Println("TT: updating sync / delay-request correction field")
-			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).SyncDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
+			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
 			if !incoming && (*pkt_ptr).Header.MessageType() == protocol.MessageSync {
 				last_sync_residence_time = (*pkt_ptr).Header.CorrectionField
 			}
@@ -267,13 +268,13 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_sync_residence_time protoc
 	// case *protocol.PDelayReq:
 	// 	{
 	// 		fmt.Println("TT: updating peer delay request correction field")
-	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayReqBody.OriginTimestamp, (*pkt_ptr).Header.CorrectionField)
+	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
 	// 		raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
 	// 	}
 	// case *protocol.PDelayResp:
 	// 	{
 	// 		fmt.Println("TT: updating peer delay response correction field")
-	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).PDelayRespBody.RequestReceiptTimestamp, (*pkt_ptr).Header.CorrectionField)
+	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
 	// 		raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
 	// 	}
 	default: 
@@ -289,26 +290,33 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_sync_residence_time protoc
 	return parsed_pkt.MessageType(), raw_pkt, last_sync_residence_time
 }
 
-func CalculateCorrection(incoming bool, originTimestamp protocol.Timestamp, correctionField protocol.Correction) protocol.Correction {
-	// We hijack the 64bit correction field for temporarily storing the ingress time
-	// In the correction field we store the time elapsed since the origin timestamp
-	// Then we overwrite the elapsed time with the residence time at the egress port
-	// TODO: This process does not work for two step operation since it requires all packets to have an origin timestamp
-	// TODO: This makes it impossible to chain different bridges and accumulate corrections
-
-	ns_since_origin_timestamp := float64(time.Since(originTimestamp.Time()).Nanoseconds())
+func CalculateCorrection(incoming bool, correctionField protocol.Correction) protocol.Correction {
+// We hijack the 64bit correction field for temporarily storing the ingress time
+// Then we overwrite the elapsed time with the residence time at the egress port
+// Normally this is done by appending a suffix to the ptp message
+// TODO: This makes it impossible to chain different bridges and accumulate corrections
 
 	if incoming {
 		fmt.Println("TT: adding ingress timestamp")
-		return protocol.NewCorrection(ns_since_origin_timestamp)
+		return UnixNanoToCorrection(time.Now().UnixNano())
 	} else {
 		fmt.Println("TT: calculating residence time")
-		ns_since_origin_timestamp_at_ingress := correctionField.Nanoseconds()
-		residence_time := ns_since_origin_timestamp - ns_since_origin_timestamp_at_ingress
+		residence_time := float64(time.Now().UnixNano() - CorrectionToUnixNano(correctionField))
 		if residence_time <= 0 {
 			fmt.Println("TT: computed nonsense residence time ", residence_time, ", are the tt's clocks synchronized?")
 			residence_time = 0
 		}
+		fmt.Println("TT: computed residence time ", residence_time, "ns")
 		return protocol.NewCorrection(residence_time)
 	}
+}
+
+// These functions do not convert between the two types! They are used to store a unix nanosecond in the header of the ptp message which has type protocol.Correction
+// This unsafe casting works because the protocol.Correction type and unix nanoseconds types are both 64bit
+func UnixNanoToCorrection(f int64) protocol.Correction {
+	return *(*protocol.Correction)(unsafe.Pointer(&f))
+}
+
+func CorrectionToUnixNano(f protocol.Correction) int64 {
+	return *(*int64)(unsafe.Pointer(&f))
 }
