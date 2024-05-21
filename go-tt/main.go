@@ -293,6 +293,7 @@ func CalculateCorrection(incoming bool, originTimestamp protocol.Timestamp, corr
 	// We hijack the 64bit correction field for temporarily storing the ingress time
 	// In the correction field we store the time elapsed since the origin timestamp
 	// Then we overwrite the elapsed time with the residence time at the egress port
+	// TODO: This process does not work for two step operation since it requires all packets to have an origin timestamp
 	// TODO: This makes it impossible to chain different bridges and accumulate corrections
 
 	ns_since_origin_timestamp := float64(time.Since(originTimestamp.Time()).Nanoseconds())
