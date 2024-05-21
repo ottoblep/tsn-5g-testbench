@@ -12,6 +12,13 @@ import (
 
 // Variables shared by the listeners
 var (
+	gtp_tun_opponent_addr_string string
+	gtp_tun_addr_string string
+	enable_unicast bool
+	enable_twostep bool
+	port_interface_name string
+	unicast_addr_string string
+
     last_sync_residence_time protocol.Correction
     last_sync_residence_time_mutex sync.Mutex
     last_delayreq_residence_time protocol.Correction
@@ -20,16 +27,27 @@ var (
 
 func main() {
 	// The term "port" such as in "port_interface" refers to the outside connections of TSN bridge which normally are ethernet ports
-	gtp_tun_opponent_addr_string := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
-	gtp_tun_addr_string := flag.String("tunip", "10.100.200.137", "IP of this endpoint of the gtp tunnel (in upstream direction there is no interface ip just the routing matters)")
-	enable_unicast := flag.Bool("unicast", false, "Switch operation from multicast to unicast")
-	port_interface_name := flag.String("portif", "eth1", "Interface of TT bridge outside port (only used with multicast)")
-	unicast_addr_string := flag.String("unicastip", "10.100.201.200", "IP of the connected PTP client/server (only used with unicast)")
+	gtp_tun_opponent_addr_string_flag := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
+	gtp_tun_addr_string_flag := flag.String("tunip", "10.100.200.137", "IP of this endpoint of the gtp tunnel (in upstream direction there is no interface ip just the routing matters)")
+	enable_unicast_flag := flag.Bool("unicast", false, "Switch operation from multicast to unicast")
+	enable_twostep_flag := flag.Bool("twostep", false, "Switch operation from one step to two step")
+	port_interface_name_flag := flag.String("portif", "eth1", "Interface of TT bridge outside port (only used with multicast)")
+	unicast_addr_string_flag := flag.String("unicastip", "10.100.201.200", "IP of the connected PTP client/server (only used with unicast)")
 	flag.Parse()
-	TtListen(*port_interface_name, *gtp_tun_addr_string, *gtp_tun_opponent_addr_string, *enable_unicast, *unicast_addr_string)
+
+	gtp_tun_opponent_addr_string = *gtp_tun_opponent_addr_string_flag
+	gtp_tun_addr_string = *gtp_tun_addr_string_flag
+	enable_unicast = *enable_unicast_flag
+	enable_twostep = *enable_twostep_flag
+	port_interface_name = *port_interface_name_flag
+	unicast_addr_string = *unicast_addr_string_flag
+	last_sync_residence_time = 0
+	last_delayreq_residence_time = 0
+
+	TtListen()
 }
 
-func TtListen(port_interface_name string, gtp_tun_addr_string string, gtp_tun_opponent_addr_string string, enable_unicast bool, unicast_addr_string string) {
+func TtListen() {
 	// Setup Internal 5GS connection
 	// IP port 50000 is arbitrarily chosen to communicate between UE and UPF because the multicast is bound to 319
 	fivegs_addr, err := net.ResolveUDPAddr("udp", gtp_tun_opponent_addr_string + ":50000")
@@ -247,6 +265,7 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 
 	// Attempt to parse possible PTP packet
 	parsed_pkt, err := protocol.DecodePacket(raw_pkt)
+	zero_correction := protocol.NewCorrection(0)
 	if err != nil {
 		fmt.Println(err.Error())
 		return 255, raw_pkt
@@ -256,15 +275,23 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 	switch pkt_ptr := parsed_pkt.(type) {
 	case *protocol.SyncDelayReq:
 		{
-			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
+			correction := CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
+
+			if enable_twostep && !incoming {
+				// In two step mode the follow up / delay response communicate the residence time
+				(*pkt_ptr).Header.CorrectionField = zero_correction
+			} else {
+				(*pkt_ptr).Header.CorrectionField = correction
+			}
+
 			if !incoming {
 				if (*pkt_ptr).Header.MessageType() == protocol.MessageSync {
 					last_sync_residence_time_mutex.Lock()
-					last_sync_residence_time = (*pkt_ptr).Header.CorrectionField
+					last_sync_residence_time = correction 
 					last_sync_residence_time_mutex.Unlock()
 				} else {
 					last_delayreq_residence_time_mutex.Lock()
-					last_delayreq_residence_time = (*pkt_ptr).Header.CorrectionField
+					last_delayreq_residence_time = correction 
 					last_delayreq_residence_time_mutex.Unlock()
 				}
 			}

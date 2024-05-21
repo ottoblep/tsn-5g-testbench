@@ -226,7 +226,7 @@ services:
     command: >
       bash -c "
       /free5gc/bin/upf -c /free5gc/config/upfcfg.yaml &
-      /go-tt/go-tt -portif eth1 -tunip 10.100.200.137 -tunopip 10.60.0.1 -unicast true -unicastip 10.100.201.200 &
+      /go-tt/go-tt -portif eth1 -tunip 10.100.200.137 -tunopip 10.60.0.1 -unicast -twostep -unicastip 10.100.201.200 &
       wait -n
       "
     networks:
@@ -269,7 +269,7 @@ services:
     command: 
     entrypoint: >
       bash -c "
-      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunip 10.60.0.1 -tunopip 10.100.200.137 -unicast true &
+      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunip 10.60.0.1 -tunopip 10.100.200.137 -unicast -twostep &
       /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
       "
     environment:
