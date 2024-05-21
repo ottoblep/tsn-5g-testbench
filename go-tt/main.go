@@ -5,24 +5,24 @@ import (
 	"fmt"
 	"github.com/facebook/time/ptp/protocol"
 	"net"
+	"sync"
 	"time"
 	"unsafe"
-	"sync"
 )
 
 // Variables shared by the listeners
 var (
 	gtp_tun_opponent_addr_string string
-	gtp_tun_addr_string string
-	enable_unicast bool
-	enable_twostep bool
-	port_interface_name string
-	unicast_addr_string string
+	gtp_tun_addr_string          string
+	enable_unicast               bool
+	enable_twostep               bool
+	port_interface_name          string
+	unicast_addr_string          string
 
-    last_sync_residence_time protocol.Correction
-    last_sync_residence_time_mutex sync.Mutex
-    last_delayreq_residence_time protocol.Correction
-    last_delayreq_residence_time_mutex sync.Mutex
+	last_sync_residence_time           protocol.Correction
+	last_sync_residence_time_mutex     sync.Mutex
+	last_delayreq_residence_time       protocol.Correction
+	last_delayreq_residence_time_mutex sync.Mutex
 )
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 func TtListen() {
 	// Setup Internal 5GS connection
 	// IP port 50000 is arbitrarily chosen to communicate between UE and UPF because the multicast is bound to 319
-	fivegs_addr, err := net.ResolveUDPAddr("udp", gtp_tun_opponent_addr_string + ":50000")
+	fivegs_addr, err := net.ResolveUDPAddr("udp", gtp_tun_opponent_addr_string+":50000")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -259,7 +259,7 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 
 func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) {
 	// Act as transparent clock
-	// We want to support both two step and one step transparent clock operation 
+	// We want to support both two step and one step transparent clock operation
 	// so we both update the Sync/DelayRequest correction fields directly (1-step) and store the residence for a possible FollowUp or DelayResponse (2-step)
 	// Peer to peer mode is not supported
 
@@ -287,11 +287,11 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 			if !incoming {
 				if (*pkt_ptr).Header.MessageType() == protocol.MessageSync {
 					last_sync_residence_time_mutex.Lock()
-					last_sync_residence_time = correction 
+					last_sync_residence_time = correction
 					last_sync_residence_time_mutex.Unlock()
 				} else {
 					last_delayreq_residence_time_mutex.Lock()
-					last_delayreq_residence_time = correction 
+					last_delayreq_residence_time = correction
 					last_delayreq_residence_time_mutex.Unlock()
 				}
 			}
@@ -300,14 +300,14 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 	case *protocol.FollowUp:
 		{
 			if !incoming {
-				(*pkt_ptr).Header.CorrectionField = last_sync_residence_time 
+				(*pkt_ptr).Header.CorrectionField = last_sync_residence_time
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
 		}
 	case *protocol.DelayResp:
 		{
 			if incoming {
-				(*pkt_ptr).Header.CorrectionField = last_delayreq_residence_time 
+				(*pkt_ptr).Header.CorrectionField = last_delayreq_residence_time
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
 		}
@@ -321,10 +321,10 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 }
 
 func CalculateCorrection(incoming bool, correctionField protocol.Correction) protocol.Correction {
-// We hijack the 64bit correction field for temporarily storing the ingress time
-// Then we overwrite the elapsed time with the residence time at the egress port
-// Normally this is done by appending a suffix to the ptp message
-// TODO: This makes it impossible to chain different bridges and accumulate corrections
+	// We hijack the 64bit correction field for temporarily storing the ingress time
+	// Then we overwrite the elapsed time with the residence time at the egress port
+	// Normally this is done by appending a suffix to the ptp message
+	// TODO: This makes it impossible to chain different bridges and accumulate corrections
 
 	if incoming {
 		return UnixNanoToCorrection(time.Now().UnixNano())
