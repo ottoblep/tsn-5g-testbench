@@ -41,7 +41,7 @@ func main() {
 			MaxSubDuration: 1 * time.Hour,
 			MetricInterval: 1 * time.Minute,
 			MinSubInterval: 1 * time.Second,
-			UTCOffset:      37 * time.Second,
+			UTCOffset:      0 * time.Second,
 		},
 	}
 
