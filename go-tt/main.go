@@ -133,9 +133,11 @@ func TtListen(port_interface_name string, gtp_tun_addr_string string, gtp_tun_op
 }
 
 func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_addr *net.UDPAddr) {
-	b := make([]byte, 1024)
 	unused_correction := protocol.NewCorrection(0)
+	var b []byte
+
 	for {
+		b = make([]byte, 1024)
 		_, _, err := listen_conn.ReadFrom(b)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -155,11 +157,12 @@ func ListenIncoming(listen_conn *net.UDPConn, fivegs_conn *net.UDPConn, fivegs_a
 }
 
 func ListenOutgoingUnicast(fivegs_conn *net.UDPConn, unicast_general_conn *net.UDPConn, unicast_event_conn *net.UDPConn, unicast_general_addr *net.UDPAddr, unicast_event_addr *net.UDPAddr) {
-	b := make([]byte, 1024)
 	last_residence_time := protocol.NewCorrection(0)
 	var msg_type protocol.MessageType
+	var b []byte
 
 	for {
+		b = make([]byte, 1024)
 		_, _, err := fivegs_conn.ReadFromUDP(b)
 
 		msg_type, b, last_residence_time = HandlePacket(false, b, last_residence_time)
@@ -194,11 +197,12 @@ func ListenOutgoingMulticast(fivegs_conn *net.UDPConn,
 	peer_general_addr *net.UDPAddr, peer_event_addr *net.UDPAddr,
 	non_peer_general_addr *net.UDPAddr, non_peer_event_addr *net.UDPAddr) {
 
-	b := make([]byte, 1024)
 	last_residence_time := protocol.NewCorrection(0)
 	var msg_type protocol.MessageType
+	var b []byte
 
 	for {
+		b = make([]byte, 1024)
 		_, _, err := fivegs_conn.ReadFromUDP(b)
 
 		msg_type, b, last_residence_time = HandlePacket(false, b, last_residence_time)
@@ -246,6 +250,7 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Co
 	// Attempt to parse possible PTP packet
 	parsed_pkt, err := protocol.DecodePacket(raw_pkt)
 	if err != nil {
+		fmt.Println(err.Error())
 		return 255, raw_pkt, last_residence_time
 	}
 
@@ -254,7 +259,7 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Co
 	case *protocol.SyncDelayReq:
 		{
 			fmt.Println("TT: updating sync / delay-request correction field")
-			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
+			 (*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
 			if !incoming {
 				last_residence_time = (*pkt_ptr).Header.CorrectionField
 			}
@@ -275,22 +280,6 @@ func HandlePacket(incoming bool, raw_pkt []byte, last_residence_time protocol.Co
 				(*pkt_ptr).Header.CorrectionField = last_residence_time 
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
-		}
-	// case *protocol.PDelayReq:
-	// 	{
-	// 		fmt.Println("TT: updating peer delay request correction field")
-	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
-	// 		raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
-	// 	}
-	// case *protocol.PDelayResp:
-	// 	{
-	// 		fmt.Println("TT: updating peer delay response correction field")
-	// 		(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
-	// 		raw_pkt, err = protocol.Bytes(&(*pkt_ptr)) // TODO: sometimes generates wrong length?
-	// 	}
-	default: 
-		{
-			fmt.Println("TT: no modification of PTP packet required")
 		}
 	}
 
