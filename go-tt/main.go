@@ -256,8 +256,7 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 	switch pkt_ptr := parsed_pkt.(type) {
 	case *protocol.SyncDelayReq:
 		{
-			fmt.Println("TT: updating sync / delay-request correction field")
-			 (*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
+			(*pkt_ptr).Header.CorrectionField = CalculateCorrection(incoming, (*pkt_ptr).Header.CorrectionField)
 			if !incoming {
 				if (*pkt_ptr).Header.MessageType() == protocol.MessageSync {
 					last_sync_residence_time_mutex.Lock()
@@ -274,7 +273,6 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 	case *protocol.FollowUp:
 		{
 			if !incoming {
-				fmt.Println("TT: updating follow up correction field with delay from last sync", last_sync_residence_time)
 				(*pkt_ptr).Header.CorrectionField = last_sync_residence_time 
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
@@ -282,7 +280,6 @@ func HandlePacket(incoming bool, raw_pkt []byte) (protocol.MessageType, []byte) 
 	case *protocol.DelayResp:
 		{
 			if incoming {
-				fmt.Println("TT: updating delay response correction field with delay from last delay request", last_delayreq_residence_time)
 				(*pkt_ptr).Header.CorrectionField = last_delayreq_residence_time 
 				raw_pkt, err = (*pkt_ptr).MarshalBinary()
 			}
@@ -303,16 +300,13 @@ func CalculateCorrection(incoming bool, correctionField protocol.Correction) pro
 // TODO: This makes it impossible to chain different bridges and accumulate corrections
 
 	if incoming {
-		fmt.Println("TT: adding ingress timestamp")
 		return UnixNanoToCorrection(time.Now().UnixNano())
 	} else {
-		fmt.Println("TT: calculating residence time")
 		residence_time := float64(time.Now().UnixNano() - CorrectionToUnixNano(correctionField))
 		if residence_time <= 0 {
-			fmt.Println("TT: computed nonsense residence time ", residence_time, ", are the tt's clocks synchronized?")
+			fmt.Println("TT: calculated nonsense residence time ", residence_time, ", are the tt's clocks synchronized?")
 			residence_time = 0
 		}
-		fmt.Println("TT: computed residence time ", residence_time, "ns")
 		return protocol.NewCorrection(residence_time)
 	}
 }
