@@ -13,7 +13,6 @@ import (
 // Variables shared by the listeners
 var (
 	gtp_tun_opponent_addr_string string
-	gtp_tun_addr_string          string
 	enable_unicast               bool
 	enable_twostep               bool
 	port_interface_name          string
@@ -28,7 +27,6 @@ var (
 func main() {
 	// The term "port" such as in "port_interface" refers to the outside connections of TSN bridge which normally are ethernet ports
 	gtp_tun_opponent_addr_string_flag := flag.String("tunopip", "10.60.0.1", "IP of the other endpoint of the gtp tunnel where ptp packets will be forwarded to (in upstream direction there is no interface ip just the routing matters)")
-	gtp_tun_addr_string_flag := flag.String("tunip", "10.100.200.137", "IP of this endpoint of the gtp tunnel (in upstream direction there is no interface ip just the routing matters)")
 	enable_unicast_flag := flag.Bool("unicast", false, "Switch operation from multicast to unicast")
 	enable_twostep_flag := flag.Bool("twostep", false, "Switch operation from one step to two step")
 	port_interface_name_flag := flag.String("portif", "eth1", "Interface of TT bridge outside port (only used with multicast)")
@@ -36,7 +34,6 @@ func main() {
 	flag.Parse()
 
 	gtp_tun_opponent_addr_string = *gtp_tun_opponent_addr_string_flag
-	gtp_tun_addr_string = *gtp_tun_addr_string_flag
 	enable_unicast = *enable_unicast_flag
 	enable_twostep = *enable_twostep_flag
 	port_interface_name = *port_interface_name_flag
