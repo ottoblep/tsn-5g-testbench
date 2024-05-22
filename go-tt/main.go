@@ -46,13 +46,13 @@ func main() {
 
 func TtListen() {
 	// Setup Internal 5GS connection
-	// IP port 50000 is arbitrarily chosen to communicate between UE and UPF because the multicast is bound to 319
-	fivegs_addr, err := net.ResolveUDPAddr("udp", gtp_tun_opponent_addr_string+":50000")
+	// IP port 38495 is chosen to communicate between UE and UPF because the multicast is bound to 319 and 320
+	fivegs_addr, err := net.ResolveUDPAddr("udp", gtp_tun_opponent_addr_string+":38495")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	fivegs_listen_addr, _ := net.ResolveUDPAddr("udp", ":50000")
+	fivegs_listen_addr, _ := net.ResolveUDPAddr("udp", ":38495")
 
 	fivegs_conn, err := net.ListenUDP("udp4", fivegs_listen_addr)
 	if err != nil {
