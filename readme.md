@@ -22,10 +22,9 @@ A software emulated 5G-TSN bridge system.
     - [x] Transparent Clock
         - [x] E2E delay measurement and packet update
         - [x] Full PTP emulation for validating transparent clock functionality 
-    - [ ] Boundary Clock
-        - [ ] External TSN network simulation
-        - [ ] QoS setting / mapping
-        - [ ] AF and TSN network communication
+    - [ ] TSN Integration
+        - [ ] TSN aware application function 
+        - [ ] AF controllable scheduler
 
 ## Setup
 
