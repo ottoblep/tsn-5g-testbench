@@ -262,7 +262,7 @@ services:
         retries: 5
 
   oai-gnb:
-    profiles: ["ran"]
+    profiles: ["gnb"]
     image: oaisoftwarealliance/oai-gnb:develop
     privileged: true
     container_name: oai-gnb
@@ -275,6 +275,9 @@ services:
         ipv4_address: 10.100.200.140
     cap_add:
       - NET_ADMIN
+    depends_on:
+      - free5gc-amf
+      - free5gc-upf
     volumes:
         - ./config/gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/oai-gnb/etc/gnb.conf
     healthcheck:
@@ -314,7 +317,7 @@ services:
         retries: 5
 
   oai-nr-ue:
-    profiles: ["ran"]
+    profiles: ["ue"]
     image: oai-nr-ue
     privileged: true
     container_name: oai-nr-ue
