@@ -1,5 +1,5 @@
 echo "Bringing up 5g system" &&
-docker compose --profile 5gs up -d &&
+docker compose --profile cn --profile ran-rfsim up -d &&
 
 echo "Waiting 15s for data session establishment and gtp tunnel creation" &&
 sleep 15 &&

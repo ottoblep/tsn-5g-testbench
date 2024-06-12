@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: mongodb
     image: mongo
     command: mongod --port 27017
@@ -16,7 +16,7 @@ services:
           - db
 
   free5gc-amf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: amf
     image: free5gc/amf:v3.4.1
     command: ./amf -c ./config/amfcfg.yaml
@@ -35,7 +35,7 @@ services:
       - free5gc-nrf
 
   free5gc-nrf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: nrf
     image: free5gc/nrf:v3.4.1
     command: ./nrf -c ./config/nrfcfg.yaml
@@ -55,7 +55,7 @@ services:
       - db
 
   free5gc-ausf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: ausf
     image: free5gc/ausf:v3.4.1
     command: ./ausf -c ./config/ausfcfg.yaml
@@ -74,7 +74,7 @@ services:
       - free5gc-nrf
 
   free5gc-nssf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: nssf
     image: free5gc/nssf:v3.4.1
     command: ./nssf -c ./config/nssfcfg.yaml
@@ -93,7 +93,7 @@ services:
       - free5gc-nrf
 
   free5gc-pcf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: pcf
     image: free5gc/pcf:v3.4.1
     command: ./pcf -c ./config/pcfcfg.yaml
@@ -112,7 +112,7 @@ services:
       - free5gc-nrf
 
   free5gc-smf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: smf
     image: free5gc/smf:v3.4.1
     command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
@@ -133,7 +133,7 @@ services:
       - free5gc-upf
 
   free5gc-udm:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: udm
     image: free5gc/udm:v3.4.1
     command: ./udm -c ./config/udmcfg.yaml
@@ -152,7 +152,7 @@ services:
       - free5gc-nrf
 
   free5gc-udr:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: udr
     image: free5gc/udr:v3.4.1
     command: ./udr -c ./config/udrcfg.yaml
@@ -172,7 +172,7 @@ services:
       - free5gc-nrf
 
   free5gc-chf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: chf
     image: free5gc/chf:v3.4.1
     command: ./chf -c ./config/chfcfg.yaml
@@ -193,7 +193,7 @@ services:
       - free5gc-webui
 
   free5gc-webui:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: webui
     image: free5gc/webui:v3.4.1
     command: ./webui -c ./config/webuicfg.yaml
@@ -217,7 +217,7 @@ services:
       - free5gc-nrf
 
   free5gc-upf:
-    profiles: ["5gs"]
+    profiles: ["cn"]
     container_name: upf
     privileged: true
     image: free5gc-upf-nwtt
@@ -237,8 +237,8 @@ services:
       tsn-bridge-in: # eth1
         ipv4_address: 10.100.201.100
 
-  oai-gnb:
-    profiles: ["5gs"]
+  oai-gnb-rfsim:
+    profiles: ["ran-rfsim"]
     image: oaisoftwarealliance/oai-gnb:develop
     privileged: true
     container_name: oai-gnb
@@ -261,8 +261,62 @@ services:
         timeout: 5s
         retries: 5
 
+  oai-gnb:
+    profiles: ["ran"]
+    image: oaisoftwarealliance/oai-gnb:develop
+    privileged: true
+    container_name: oai-gnb
+    environment:
+        USE_ADDITIONAL_OPTIONS: --sa -E --rfsim --log_config.global_log_options level,nocolor,time
+        ASAN_OPTIONS: detect_leaks=0
+    depends_on:
+      - free5gc-amf
+      - free5gc-upf
+    networks:
+      5gs-bridge:
+        ipv4_address: 10.100.200.140
+    cap_add:
+      - NET_ADMIN
+    volumes:
+        - ./config/gnb.sa.band78.106prb.rfsim.conf:/opt/oai-gnb/etc/gnb.conf
+    healthcheck:
+        test: /bin/bash -c "pgrep nr-softmodem"
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+  oai-nr-ue-rfsim:
+    profiles: ["ran-rfsim"]
+    image: oai-nr-ue-dstt
+    privileged: true
+    container_name: oai-nr-ue
+    command: 
+    entrypoint: >
+      bash -c "
+      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunopip 10.100.200.137 -unicast -twostep &
+      /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+      "
+    environment:
+        USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000001 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
+    depends_on:
+        - oai-gnb-rfsim
+    networks:
+      5gs-bridge: # eth0
+        ipv4_address: 10.100.200.150
+      tsn-bridge-out: # eth1
+        ipv4_address: 10.100.202.100
+    cap_add:
+      - NET_ADMIN
+    volumes:
+        - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+    healthcheck:
+        test: /bin/bash -c "pgrep nr-uesoftmodem"
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
   oai-nr-ue:
-    profiles: ["5gs"]
+    profiles: ["ran"]
     image: oai-nr-ue-dstt
     privileged: true
     container_name: oai-nr-ue
