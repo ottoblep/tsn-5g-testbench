@@ -267,7 +267,7 @@ services:
     privileged: true
     container_name: oai-gnb
     environment:
-        USE_ADDITIONAL_OPTIONS: --sa -E --rfsim --log_config.global_log_options level,nocolor,time
+        USE_ADDITIONAL_OPTIONS: --sa --gNBs.[0].min_rxtxtime 6 --log_config.global_log_options level,nocolor,time
         ASAN_OPTIONS: detect_leaks=0
     depends_on:
       - free5gc-amf
@@ -278,7 +278,7 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-        - ./config/gnb.sa.band78.106prb.rfsim.conf:/opt/oai-gnb/etc/gnb.conf
+        - ./config/gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/oai-gnb/etc/gnb.conf
     healthcheck:
         test: /bin/bash -c "pgrep nr-softmodem"
         interval: 10s
@@ -317,24 +317,16 @@ services:
 
   oai-nr-ue:
     profiles: ["ran"]
-    image: oai-nr-ue-dstt
+    image: oai-nr-ue
     privileged: true
     container_name: oai-nr-ue
     command: 
     entrypoint: >
-      bash -c "
-      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunopip 10.100.200.137 -unicast -twostep &
-      /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
-      "
+      bash -c "/opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf"
     environment:
-        USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000001 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
+        USE_ADDITIONAL_OPTIONS: -r 106 --numerology 1 --band 78 -C 3619200000 --ssb 516 --sa --uicc0.imsi 208930000000001 --log_config.global_log_options level,nocolor,time
     depends_on:
         - oai-gnb
-    networks:
-      5gs-bridge: # eth0
-        ipv4_address: 10.100.200.150
-      tsn-bridge-out: # eth1
-        ipv4_address: 10.100.202.100
     cap_add:
       - NET_ADMIN
     volumes:
