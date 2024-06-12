@@ -269,9 +269,6 @@ services:
     environment:
         USE_ADDITIONAL_OPTIONS: --sa --gNBs.[0].min_rxtxtime 6 --log_config.global_log_options level,nocolor,time
         ASAN_OPTIONS: detect_leaks=0
-    depends_on:
-      - free5gc-amf
-      - free5gc-upf
     networks:
       5gs-bridge:
         ipv4_address: 10.100.200.140
@@ -325,8 +322,6 @@ services:
       bash -c "/opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf"
     environment:
         USE_ADDITIONAL_OPTIONS: -r 106 --numerology 1 --band 78 -C 3619200000 --ssb 516 --sa --uicc0.imsi 208930000000001 --log_config.global_log_options level,nocolor,time
-    depends_on:
-        - oai-gnb
     cap_add:
       - NET_ADMIN
     volumes:
