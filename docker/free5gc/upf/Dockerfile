@@ -12,10 +12,10 @@ RUN apt-get update \
     && apt-get clean
 
 # Build Free5GC
-RUN git clone --recurse-submodules https://github.com/free5gc/free5gc /free5gc
+RUN git clone https://github.com/free5gc/free5gc /free5gc
 WORKDIR /free5gc
 RUN git checkout b0abf3dbe2c7571db6fc938b4107c034357bf080
-RUN git submodule update --init --recursive --rebase --force
+RUN git submodule update --init --recursive
 
 # Optionally Replace select network functions with forked versions
 # RUN rm -rf free5gc/NFs/upf
