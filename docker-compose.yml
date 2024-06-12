@@ -267,7 +267,7 @@ services:
     privileged: true
     container_name: oai-gnb
     environment:
-        USE_ADDITIONAL_OPTIONS: --sa --gNBs.[0].min_rxtxtime 6 --log_config.global_log_options level,nocolor,time
+        USE_ADDITIONAL_OPTIONS: --sa --gNBs.[0].min_rxtxtime 6 -E --continuous-tx --log_config.global_log_options level,nocolor,time
         ASAN_OPTIONS: detect_leaks=0
     networks:
       5gs-bridge:
@@ -318,10 +318,10 @@ services:
     privileged: true
     container_name: oai-nr-ue
     command: 
-    entrypoint: >
-      bash -c "/opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf"
+    entrypoint: /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
     environment:
         USE_ADDITIONAL_OPTIONS: -r 106 --numerology 1 --band 78 -C 3619200000 --ssb 516 --sa --uicc0.imsi 208930000000001 --log_config.global_log_options level,nocolor,time
+        USE_B2XX: 1
     cap_add:
       - NET_ADMIN
     volumes:
