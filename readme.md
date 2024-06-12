@@ -33,6 +33,7 @@ All further steps with the exception of the gtp5g kernel module are executed ins
 ```bash
 apt install git docker docker-compose
 ```
+Optionally [add the current user to docker group](https://docs.docker.com/engine/install/linux-postinstall/)
 
 #### 2. Clone this repo and pull submodules
 This will pull all submodules. No further manual cloning of sources is required.
