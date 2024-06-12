@@ -269,6 +269,7 @@ services:
     environment:
         USE_ADDITIONAL_OPTIONS: --sa -E --gNBs.[0].min_rxtxtime 6 --continuous-tx --log_config.global_log_options level,nocolor,time
         ASAN_OPTIONS: detect_leaks=0
+        USE_B2XX: 1
     networks:
       5gs-bridge:
         ipv4_address: 10.100.200.140
