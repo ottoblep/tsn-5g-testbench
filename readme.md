@@ -94,7 +94,10 @@ Two additional containers will setup a unicast ptp server and client using [Face
 ```
 
 ### Physical Setup
-For instructions on a physical radio channel refer to [physical_setup.md](./docs/physical_setup.md)
+To launch the 5GS with two Ettus B210 devices on separate PCs run
+`docker compose --profile cn up -d && docker compose up oai-gnb` on the gNB+CN PC
+and
+`docker compose up oai-nr-ue` on the UE PC
 
 ## Development
 
