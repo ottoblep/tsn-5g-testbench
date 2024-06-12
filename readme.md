@@ -31,7 +31,7 @@ A software emulated 5G-TSN bridge system.
 #### 1. Install Docker
 All further steps with the exception of the gtp5g kernel module are executed inside docker. As a consequence no host dependencies are required.
 ```bash
-apt install git docker docker-compose-plugin
+apt install git docker docker-compose
 ```
 
 #### 2. Clone this repo and pull submodules
@@ -41,7 +41,7 @@ git submodule update --init --recursive
 ```
 
 #### 3. Install [kernel module for GTP](https://github.com/free5gc/gtp5g)
-Example instructions for ubuntu
+Example instructions for ubuntu 22.04
 ```bash
 apt install -y build-essential gcc-12
 cd gtp5g
@@ -71,7 +71,7 @@ sudo lsmod | grep gtp5g
 ### Run 5GS
 On first launch this will build some additional images and pull the rest from docker-hub.
 ```bash
-docker compose --profile 5gs up
+docker compose --profile cn --profile ran-rfsim up
 ```
 
 ### Test Connection
@@ -93,6 +93,8 @@ Two additional containers will setup a unicast ptp server and client using [Face
 ./launch_ptp_emulation.sh && docker logs -f ptp-client
 ```
 
+### Physical Setup
+For instructions on a physical radio channel refer to [physical_setup.md](./docs/physical_setup.md)
 
 ## Development
 
