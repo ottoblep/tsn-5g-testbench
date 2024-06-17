@@ -18,6 +18,7 @@ A software emulated 5G-TSN bridge system.
     - [x] UE Context setup 
     - [x] PDU Session Establishment
     - [x] IP Traffic
+    - [x] Real Radio Channel using Ettus B210 SDRs 
 - **TSN** 
     - [x] Transparent Clock
         - [x] E2E delay measurement and packet update
