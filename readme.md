@@ -97,8 +97,8 @@ Two additional containers will setup a unicast ptp server and client using [Face
 ### Physical Setup
 To launch the 5GS with a real radio channel using two Ettus B210 SDRs run
 ```bash
-sudo docker compose --profile cn --profile gnb up` on the gNB+CN PC # on the gnB+CN PC
-sudo docker compose --profile ue up` on the UE PC # on the UE PC
+sudo docker compose --profile cn --profile gnb up # on the gNB+CN PC
+sudo docker compose --profile ue up # on the UE PC
 ```
 
 ## Development
