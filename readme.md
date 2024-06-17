@@ -105,8 +105,12 @@ sudo docker compose --profile ue up` on the UE PC # on the UE PC
 
 ### Repo Structure
 All forks that are part of this project are tracked as git submodules, so they can be identified at a glance.\
-The toplevel `docker-compose.yml` file is the centerpiece.
-The go-tt component is loaded into the UE and UPF via modified docker files.
+The toplevel `docker-compose.yml` file is the centerpiece.\
+The go-tt component is loaded into the UE and UPF via modified docker files.\
+To update OAI to the newest release:
+- update the openairinterface5g fork merging the latest changes
+- update the commit tracked in the submodule in this repo
+- update the tag of the gNB image which is downloaded from dockerhub in `docker-compose.yml`
 
 ### Environment
 To simplify dealing with the different ecosystems of OAI and Free5GC on our host machine we can develop applications directly inside the provided containers.
