@@ -124,4 +124,6 @@ For example, PTP traffic can be monitored on the `tsn-bridge-in` and `ts-bridge-
 
 ### Extending
 Modifications to the RAN components can be performed by modifying the [`openairinterface5g`](./openairinterface5g/) fork on the toplevel of the repo.
+The OAI gNB is currently unmodified and thus we pull the image from dockerhub.
+To build the gNB from the fork one can adjust `oai-gnb` in the `docker-compose.yml` to perform the same manual build process as for the UE.
 To modify the Free5GC core network or add new network functions the [`docker-compose.yml`](./docker-compose.yml) and the docker files in [`docker/free5gc`](./docker/free5gc/) need to be adjusted.
