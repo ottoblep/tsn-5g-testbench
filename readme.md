@@ -63,6 +63,8 @@ sudo lsmod | grep gtp5g
 ```
 
 #### 5. Import subscriber database
+Free5GC stores 5G subscriber in a mongodb databse.
+We restore the UE information from a database dump.
 ```bash
 ./scripts/restore_db.sh
 ```
@@ -95,7 +97,13 @@ Two additional containers will setup a unicast ptp server and client using [Face
 ```
 
 ### Physical Setup
-To launch the 5GS with a real radio channel using two Ettus B210 SDRs run
+The 5GS can be setup with a physical radio channel using two Ettus B210 SDRs.
+One PC will run the UE while the other handles gNB and CN.\
+The installation instructions above still apply with some steps being unnecessary.
+The UE PC can skip the following installation steps: installing the gtp5g kernel module (only used by free5gc), building the free5gc images and restoring the free5gc database.\
+The gNB+CN PC can skip the following installation steps: building the oai images (the gNB is pulled from docker-hub).
+
+To launch the 5GS with the physical radio channel run
 ```bash
 sudo docker compose --profile cn --profile gnb up # on the gNB+CN PC
 sudo docker compose --profile ue up # on the UE PC
