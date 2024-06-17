@@ -96,9 +96,10 @@ Two additional containers will setup a unicast ptp server and client using [Face
 
 ### Physical Setup
 To launch the 5GS with two Ettus B210 devices on separate PCs run
-`docker compose --profile cn --profile gnb up` on the gNB+CN PC
+`sudo docker compose --profile cn --profile gnb up` on the gNB+CN PC
 and
-`docker compose --profile ue up` on the UE PC
+`sudo docker compose --profile ue up` on the UE PC
+Accessing the Ettus devices requires root.
 
 ## Development
 
