@@ -239,7 +239,7 @@ services:
 
   oai-gnb-rfsim:
     profiles: ["ran-rfsim"]
-    image: oaisoftwarealliance/oai-gnb:develop
+    image: oaisoftwarealliance/oai-gnb:2024.w23
     privileged: true
     container_name: oai-gnb
     environment:
@@ -263,7 +263,7 @@ services:
 
   oai-gnb:
     profiles: ["gnb"]
-    image: oaisoftwarealliance/oai-gnb:develop
+    image: oaisoftwarealliance/oai-gnb:2024.w23
     privileged: true
     container_name: oai-gnb
     environment:
