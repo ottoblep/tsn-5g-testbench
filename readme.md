@@ -28,6 +28,7 @@ A software emulated 5G-TSN bridge system.
         - [ ] AF controllable scheduler
 
 ## Setup
+**NOTE** We recommend Ubuntu 22.04 for best comparabiltiy with Openairinterface and Free5GC, however other distributions are possible 
 
 #### 1. Install Docker
 All further steps with the exception of the gtp5g kernel module are executed inside docker. As a consequence no host dependencies are required.
