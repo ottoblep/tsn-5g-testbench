@@ -93,6 +93,12 @@ docker exec oai-nr-ue ping -I oaitun_ue1 -c 5 10.100.200.137 # Uplink ping from 
 docker exec upf ping -c 5 10.60.0.1 # Downlink ping from UPF container to UE
 ```
 
+For bandwidth testing
+```bash
+iperf3 -B 10.60.0.1 -i 1 -s # On UE
+iperf3 -c 10.60.0.1 -u -i 1 -t 20 -b 100000K # On UPF
+```
+
 ### Run 5GS + PTP Emulation
 Two additional containers will setup a unicast ptp server and client using [Facebook's PTP library](https://pkg.go.dev/github.com/facebook/time/ptp).
 ```bash
