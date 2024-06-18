@@ -22,6 +22,7 @@ A software emulated 5G-TSN bridge system.
 - **TSN** 
     - [x] Transparent Clock
         - [x] E2E delay measurement and packet update
+            - [ ] 5GS clock synchronization via RRC or SIB
         - [x] Full PTP emulation for validating transparent clock functionality 
     - [ ] TSN Integration
         - [ ] TSN aware application function 
