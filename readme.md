@@ -103,6 +103,7 @@ One PC will run the UE while the other handles gNB and CN.\
 The installation instructions above still apply with some steps being unnecessary.\
 The UE PC can skip the steps: installing the gtp5g kernel module (only used by free5gc), building the free5gc images and restoring the free5gc database.\
 The gNB+CN PC can skip the steps: building the oai images (the gNB is pulled from docker-hub).
+In case of `can't open the radio device: none` or `USB open failed: insufficient permissions` replugging the usb connection and/or restarting the UE/gNB have shown to be a sufficient.
 
 To launch the 5GS with the physical radio channel run
 ```bash
