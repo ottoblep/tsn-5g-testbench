@@ -1,10 +1,4 @@
-echo "Bringing up UE side of the 5G system" &&
-sudo docker compose --profile ue up # on the UE PC
-
-echo "Waiting 15s for data session establishment and gtp tunnel creation" &&
-sleep 15 &&
-
-echo "Launching ptp containers" &&
+echo "Launching software ptp client" &&
 docker compose up -d ptp-client &&
 
 echo "Setting up routing for PTP packets" &&

@@ -1,10 +1,4 @@
-echo "Bringing up gNB/CN side of the 5G system" &&
-sudo docker compose --profile cn --profile gnb up # on the gNB+CN PC
-
-echo "Waiting 15s for data session establishment and gtp tunnel creation" &&
-sleep 15 &&
-
-echo "Launching ptp containers" &&
+echo "Launching software ptp server" &&
 docker compose up -d ptp-server &&
 
 echo "Setting up routing for PTP packets" &&

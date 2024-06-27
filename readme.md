@@ -74,13 +74,15 @@ We restore the UE information from a database dump.
 
 ## Usage
 
-### Run 5GS
+### RFSim Setup
+
+#### Run 5GS
 On first launch this will build some additional images and pull the rest from docker-hub.
 ```bash
 docker compose --profile cn --profile ran-rfsim up
 ```
 
-### Test Connection
+#### Test Connection
 When the setup was successfull you will read the following in the logs:
 ```
 oai-nr-ue  | 6569.638343 [OIP] I Interface oaitun_ue1 successfully configured, ip address 10.60.0.1, mask 255.255.255.0 broadcast address 10.60.0.255
@@ -99,13 +101,16 @@ iperf3 -B 10.60.0.1 -i 1 -s # On UE
 iperf3 -c 10.60.0.1 -u -i 1 -t 20 -b 100000K # On UPF
 ```
 
-### Run 5GS + PTP Emulation
+#### PTP Emulation
+
 Two additional containers will setup a unicast ptp server and client using [Facebook's PTP library](https://pkg.go.dev/github.com/facebook/time/ptp).
+After running the 5GS and establishing a the PDU connection run
 ```bash
 ./scripts/launch_ptp_emulation_rfsim.sh && docker logs -f ptp-client
 ```
 
 ### Physical Setup
+
 The 5GS can be setup with a physical radio channel using two Ettus B210 SDRs.
 One PC will run the UE while the other handles gNB and CN.\
 The installation instructions above still apply with some steps being unnecessary.\
@@ -113,15 +118,18 @@ The UE PC can skip the steps: installing the gtp5g kernel module (only used by f
 The gNB+CN PC can skip the steps: building the oai images (the gNB is pulled from docker-hub).
 In case of `can't open the radio device: none` or `USB open failed: insufficient permissions` replugging the usb connection and/or restarting the UE/gNB have shown to be a sufficient.
 
-To launch the 5GS with the physical radio channel run
+#### Run 5GS
+
 ```bash
 sudo docker compose --profile cn --profile gnb up # on the gNB+CN PC
 sudo docker compose --profile ue up # on the UE PC
 ```
 
+#### PTP Emulation
+
 To run the PTP Emulation the two host PCs shall first be synced with a separate PTP connection.
 This is required since we do not yet leverage the 5G RRC layer to synchronize UE and gNB clocks.
-Then run the dedicated scripts on each side.
+After running the 5GS and establishing a the PDU connection run
 ```bash
 ./scripts/launch_ptp_emulation_usrp_gnbcn.sh && docker logs -f ptp-server # on the gNB+CN PC
 ./scripts/launch_ptp_emulation_usrp_ue.sh && docker logs -f ptp-client # on the UE PC
