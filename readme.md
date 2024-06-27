@@ -102,7 +102,7 @@ iperf3 -c 10.60.0.1 -u -i 1 -t 20 -b 100000K # On UPF
 ### Run 5GS + PTP Emulation
 Two additional containers will setup a unicast ptp server and client using [Facebook's PTP library](https://pkg.go.dev/github.com/facebook/time/ptp).
 ```bash
-./launch_ptp_emulation.sh && docker logs -f ptp-client
+./scripts/launch_ptp_emulation_rfsim.sh && docker logs -f ptp-client
 ```
 
 ### Physical Setup
@@ -117,6 +117,14 @@ To launch the 5GS with the physical radio channel run
 ```bash
 sudo docker compose --profile cn --profile gnb up # on the gNB+CN PC
 sudo docker compose --profile ue up # on the UE PC
+```
+
+To run the PTP Emulation the two host PCs shall first be synced with a separate PTP connection.
+This is required since we do not yet leverage the 5G RRC layer to synchronize UE and gNB clocks.
+Then run the dedicated scripts on each side.
+```bash
+./scripts/launch_ptp_emulation_usrp_gnbcn.sh && docker logs -f ptp-server # on the gNB+CN PC
+./scripts/launch_ptp_emulation_usrp_ue.sh && docker logs -f ptp-client # on the UE PC
 ```
 
 ## Development
