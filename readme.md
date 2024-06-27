@@ -76,6 +76,8 @@ We restore the UE information from a database dump.
 
 ### RFSim Setup
 
+This launches the 5GS + CN on a single docker host machine
+
 #### Run 5GS
 On first launch this will build some additional images and pull the rest from docker-hub.
 ```bash
