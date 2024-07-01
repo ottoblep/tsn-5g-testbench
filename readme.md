@@ -110,6 +110,7 @@ After running the 5GS and establishing a the PDU connection run
 ```bash
 ./scripts/launch_ptp_emulation_rfsim.sh && docker logs -f ptp-client
 ```
+Since both docker containers utilize the same system clock the timing results are not meaningful. 
 
 ### Physical Setup
 
