@@ -32,9 +32,9 @@ A software emulated 5G-TSN bridge system.
 **NOTE** We recommend Ubuntu 22.04 for best comparabiltiy with Openairinterface and Free5GC, however other distributions are possible 
 
 #### 1. Install Docker
-All further steps with the exception of the gtp5g kernel module are executed inside docker. As a consequence no host dependencies are required.
+All further steps with the exception of the gtp5g kernel module are executed inside docker. As a consequence no host dependencies are required. PTPD is utilized only for the PTP simulation with separate UE and gNB PCs.
 ```bash
-apt install git docker docker-compose
+apt install git docker docker-compose ptpd
 ```
 Optionally [add the current user to docker group](https://docs.docker.com/engine/install/linux-postinstall/)
 
@@ -117,8 +117,10 @@ Since both docker containers utilize the same system clock the timing results ar
 The 5GS can be setup with a physical radio channel using two Ettus B210 SDRs.
 One PC will run the UE while the other handles gNB and CN.\
 The installation instructions above still apply with some steps being unnecessary.\
-The UE PC can skip the steps: installing the gtp5g kernel module (only used by free5gc), building the free5gc images and restoring the free5gc database.\
-The gNB+CN PC can skip the steps: building the oai images (the gNB is pulled from docker-hub).
+
+**The UE PC can skip the steps:** installing the gtp5g kernel module (only used by free5gc), building the free5gc images and restoring the free5gc database.\
+**The gNB+CN PC can skip the steps:** building the oai images (the gNB is pulled from docker-hub).
+
 Testing the connection is identical to the RFSim case.
 In case of `can't open the radio device: none` or `USB open failed: insufficient permissions` replugging the usb connection and/or restarting the UE/gNB have shown to be sufficient.
 
