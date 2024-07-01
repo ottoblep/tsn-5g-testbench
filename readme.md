@@ -44,7 +44,8 @@ This will pull all submodules. No further manual cloning of sources is required.
 git submodule update --init --recursive
 ```
 
-#### 3. Install [kernel module for GTP](https://github.com/free5gc/gtp5g)
+#### 3. Install [Free5GC kernel module for GTP](https://github.com/free5gc/gtp5g)
+Free5GC utilizes a custom kernel module while OAI does not require it.
 Example instructions for ubuntu 22.04
 ```bash
 apt install -y build-essential gcc-12
