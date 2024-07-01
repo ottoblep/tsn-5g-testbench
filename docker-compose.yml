@@ -318,7 +318,7 @@ services:
 
   oai-nr-ue:
     profiles: ["ue"]
-    image: oai-nr-ue
+    image: oai-nr-ue-dstt
     privileged: true
     container_name: oai-nr-ue
     command: 
