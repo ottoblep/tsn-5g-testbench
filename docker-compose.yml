@@ -322,7 +322,11 @@ services:
     privileged: true
     container_name: oai-nr-ue
     command: 
-    entrypoint: /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+    entrypoint: >
+      bash -c "
+      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunopip 10.100.200.137 -unicast -twostep &
+      /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+      "
     environment:
         USE_ADDITIONAL_OPTIONS: -E -r 106 --numerology 1 --band 78 -C 3619200000 --ssb 516 --sa --uicc0.imsi 208930000000001 --log_config.global_log_options level,nocolor,time
         USE_B2XX: 1
