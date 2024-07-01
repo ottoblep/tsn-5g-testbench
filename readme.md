@@ -123,8 +123,8 @@ In case of `can't open the radio device: none` or `USB open failed: insufficient
 #### Run 5GS
 
 ```bash
-sudo docker compose --profile cn --profile gnb up # on the gNB+CN PC
-sudo docker compose --profile ue up # on the UE PC
+sudo docker compose --profile cn --profile gnb up -d && docker logs -f oai-gnb # on the gNB+CN PC
+sudo docker compose --profile ue up -d && docker logs -f oai-nr-ue # on the UE PC
 ```
 
 #### PTP Emulation
