@@ -29,10 +29,11 @@ A software emulated 5G-TSN bridge system.
         - [ ] AF controllable scheduler
 
 ## Setup
-**NOTE** We recommend Ubuntu 22.04 for best comparabiltiy with Openairinterface and Free5GC, however other distributions are possible 
+**NOTE** We recommend Ubuntu 22.04 for best comparabiltiy with Openairinterface and Free5GC, however other distributions are possible.\
+**NOTE** For the physical setup with USRP devices check the corresponding [Usage](#physical-setup) section first.
 
 #### 1. Install Docker
-All further steps with the exception of the gtp5g kernel module are executed inside docker. As a consequence no host dependencies are required. PTPD is utilized only for the PTP simulation with separate UE and gNB PCs.
+All further steps with the exception of the gtp5g kernel module are executed inside docker. As a consequence no host dependencies are required. PTPD is utilized only for the physical setup. 
 ```bash
 apt install git docker docker-compose ptpd
 ```
@@ -60,13 +61,17 @@ sudo modprobe gtp5g
 sudo lsmod | grep gtp5g
 ```
 
-#### 4. Build custom docker images 
+#### 4. Build customized OAI images 
 ```bash
 ./scripts/build_oai_images.sh
+```
+
+#### 5. Build customized Free5GC images
+```bash
 ./scripts/build_free5gc_images.sh
 ```
 
-#### 5. Import subscriber database
+#### 6. Import subscriber database
 Free5GC stores 5G subscriber in a mongodb database.
 We restore the UE information from a database dump.
 ```bash
@@ -117,12 +122,11 @@ Since both docker containers utilize the same system clock the timing results ar
 
 The 5GS can be setup with a physical radio channel using two Ettus B210 SDRs.
 One PC will run the UE while the other handles gNB and CN.\
-The installation instructions above still apply with some steps being unnecessary.\
 
-**The UE PC can skip the steps:** installing the gtp5g kernel module (only used by free5gc), building the free5gc images and restoring the free5gc database.\
-**The gNB+CN PC can skip the steps:** building the oai images (the gNB is pulled from docker-hub).
+The [installation instructions](#setup) above still apply with some steps being unnecessary.\
+**The UE PC only requires steps [1](#1-install-docker),[2](#2-clone-this-repo-and-pull-submodules),[4](#4-build-customized-oai-images). The gNB+CN PC only requires steps [1](#1-install-docker),[2](#2-clone-this-repo-and-pull-submodules),[3](#3-install-free5gc-kernel-module-for-gtp),[5](#5-build-customized-free5gc-images),[6](#6-import-subscriber-database).**
 
-Testing the connection is identical to the RFSim case.
+Testing the connection is identical to the [RFSim case](#test-connection).
 In case of `can't open the radio device: none` or `USB open failed: insufficient permissions` replugging the usb connection and/or restarting the UE/gNB have shown to be sufficient.
 
 #### Run 5GS
