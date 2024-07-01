@@ -7,7 +7,7 @@ sudo ptpd -c $SCRIPTPATH/../config/eth_ptpd_server.config
 echo "Launching software ptp server"
 docker compose up -d ptp-server
 
-echo "Setting up routing for PTP packets"
+echo "Setting up routing for PTP packets. If this fails the 5GS is likely not started or setup fully."
 # For network graph see docs/structure.drawio
 # This can only run after the data session has been established by the 5gs (oaitun_ue1 created)
 
