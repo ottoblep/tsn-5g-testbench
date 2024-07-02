@@ -80,7 +80,7 @@ We restore the UE information from a database dump.
 
 ## Usage
 
-### RFSim Setup
+### RFSim
 
 This launches the 5GS + CN on a single docker host machine
 
@@ -118,7 +118,7 @@ After running the 5GS and establishing a the PDU connection run
 ```
 Since both docker containers utilize the same system clock the timing results are not meaningful. 
 
-### Physical Setup
+### Real Radio
 
 The 5GS can be setup with a physical radio channel using two Ettus B210 SDRs.
 One PC will run the UE while the other handles gNB and CN.\
