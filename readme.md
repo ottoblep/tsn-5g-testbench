@@ -126,8 +126,9 @@ One PC will run the UE while the other handles gNB and CN.\
 The [installation instructions](#setup) above still apply with some steps being unnecessary.\
 **The UE PC only requires steps [1](#1-install-docker),[2](#2-clone-this-repo-and-pull-submodules),[4](#4-build-customized-oai-images). The gNB+CN PC only requires steps [1](#1-install-docker),[2](#2-clone-this-repo-and-pull-submodules),[3](#3-install-free5gc-kernel-module-for-gtp),[5](#5-build-customized-free5gc-images),[6](#6-import-subscriber-database).**
 
-Testing the connection is identical to the [RFSim case](#test-connection).
-In case of `can't open the radio device: none` or `USB open failed: insufficient permissions` replugging the usb connection and/or restarting the UE/gNB have shown to be sufficient.
+Testing the connection is identical to the [RFSim case](#test-connection).\
+In case of `can't open the radio device: none` replug the usb connection.\
+In case of `USB open failed: insufficient permissions` restart the containers.
 
 #### Run 5GS
 
