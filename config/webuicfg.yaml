@@ -1,5 +1,5 @@
 info:
-  version: 1.0.2
+  version: 1.0.3
   description: WebUI initial local configuration
 
 configuration:
@@ -13,10 +13,14 @@ configuration:
     port: 5000
   billingServer:
     enable: true
-    hostIPv4: webui
-    listenPort: 2122
-    port: 2121
-    tls:
+    hostIPv4: webui 
+    listenPort: 2121
+    portRange: # passive port range
+      start: 2123
+      end: 2130
+    basePath: /tmp/webconsole
+    port: 2122 # CGF's FTP server port (not used for now)
+    cert:
       pem: cert/chf.pem
       key: cert/chf.key
 

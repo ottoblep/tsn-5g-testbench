@@ -18,7 +18,7 @@ services:
   free5gc-amf:
     profiles: ["cn"]
     container_name: amf
-    image: free5gc/amf:v3.4.1
+    image: free5gc/amf:v3.4.2
     command: ./amf -c ./config/amfcfg.yaml
     expose:
       - "8000"
@@ -37,7 +37,7 @@ services:
   free5gc-nrf:
     profiles: ["cn"]
     container_name: nrf
-    image: free5gc/nrf:v3.4.1
+    image: free5gc/nrf:v3.4.2
     command: ./nrf -c ./config/nrfcfg.yaml
     expose:
       - "8000"
@@ -57,7 +57,7 @@ services:
   free5gc-ausf:
     profiles: ["cn"]
     container_name: ausf
-    image: free5gc/ausf:v3.4.1
+    image: free5gc/ausf:v3.4.2
     command: ./ausf -c ./config/ausfcfg.yaml
     expose:
       - "8000"
@@ -76,7 +76,7 @@ services:
   free5gc-nssf:
     profiles: ["cn"]
     container_name: nssf
-    image: free5gc/nssf:v3.4.1
+    image: free5gc/nssf:v3.4.2
     command: ./nssf -c ./config/nssfcfg.yaml
     expose:
       - "8000"
@@ -95,7 +95,7 @@ services:
   free5gc-pcf:
     profiles: ["cn"]
     container_name: pcf
-    image: free5gc/pcf:v3.4.1
+    image: free5gc/pcf:v3.4.2
     command: ./pcf -c ./config/pcfcfg.yaml
     expose:
       - "8000"
@@ -114,7 +114,7 @@ services:
   free5gc-smf:
     profiles: ["cn"]
     container_name: smf
-    image: free5gc/smf:v3.4.1
+    image: free5gc/smf:v3.4.2
     command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
     expose:
       - "8000"
@@ -135,7 +135,7 @@ services:
   free5gc-udm:
     profiles: ["cn"]
     container_name: udm
-    image: free5gc/udm:v3.4.1
+    image: free5gc/udm:v3.4.2
     command: ./udm -c ./config/udmcfg.yaml
     expose:
       - "8000"
@@ -154,7 +154,7 @@ services:
   free5gc-udr:
     profiles: ["cn"]
     container_name: udr
-    image: free5gc/udr:v3.4.1
+    image: free5gc/udr:v3.4.2
     command: ./udr -c ./config/udrcfg.yaml
     expose:
       - "8000"
@@ -174,7 +174,7 @@ services:
   free5gc-chf:
     profiles: ["cn"]
     container_name: chf
-    image: free5gc/chf:v3.4.1
+    image: free5gc/chf:v3.4.2
     command: ./chf -c ./config/chfcfg.yaml
     expose:
       - "8000"
@@ -195,7 +195,7 @@ services:
   free5gc-webui:
     profiles: ["cn"]
     container_name: webui
-    image: free5gc/webui:v3.4.1
+    image: free5gc/webui:v3.4.2
     command: ./webui -c ./config/webuicfg.yaml
     expose:
       - "2122"

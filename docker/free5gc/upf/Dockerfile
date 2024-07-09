@@ -14,7 +14,7 @@ RUN apt-get update \
 # Build Free5GC
 RUN git clone https://github.com/free5gc/free5gc /free5gc
 WORKDIR /free5gc
-RUN git checkout b0abf3dbe2c7571db6fc938b4107c034357bf080
+RUN git checkout v3.4.2 
 RUN git submodule update --init --recursive
 
 # Optionally Replace select network functions with forked versions
