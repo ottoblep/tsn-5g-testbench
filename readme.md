@@ -63,19 +63,19 @@ sudo lsmod | grep gtp5g
 
 #### 4. Build customized OAI images 
 ```bash
-./scripts/build_oai_images.sh
+bash scripts/build_oai_images.sh
 ```
 
 #### 5. Build customized Free5GC images
 ```bash
-./scripts/build_free5gc_images.sh
+bash scripts/build_free5gc_images.sh
 ```
 
 #### 6. Import subscriber database
 Free5GC stores 5G subscriber in a mongodb database.
 We restore the UE information from a database dump.
 ```bash
-./scripts/restore_db.sh
+bash scripts/restore_db.sh
 ```
 
 ## Usage
@@ -114,7 +114,7 @@ iperf3 -c 10.60.0.1 -u -i 1 -t 20 -b 100000K # On UPF
 Two additional containers will setup a unicast ptp server and client using [Facebook's PTP library](https://pkg.go.dev/github.com/facebook/time/ptp).
 After running the 5GS and establishing a the PDU connection run
 ```bash
-./scripts/launch_ptp_emulation_rfsim.sh && docker logs -f ptp-client
+bash scripts/launch_ptp_emulation_rfsim.sh && docker logs -f ptp-client
 ```
 Since both docker containers utilize the same system clock the timing results are not meaningful. 
 
@@ -143,8 +143,8 @@ To run the PTP Emulation the two host PCs shall first be synced with a separate 
 This is required since we do not yet leverage the 5G RRC layer to synchronize UE and gNB clocks.
 After running the 5GS and establishing a the PDU connection run
 ```bash
-./scripts/launch_ptp_emulation_usrp_gnbcn.sh && docker logs -f ptp-server # on the gNB+CN PC
-./scripts/launch_ptp_emulation_usrp_ue.sh && docker logs -f ptp-client # on the UE PC
+bash scripts/launch_ptp_emulation_usrp_gnbcn.sh && docker logs -f ptp-server # on the gNB+CN PC
+bash scripts/launch_ptp_emulation_usrp_ue.sh && docker logs -f ptp-client # on the UE PC
 ```
 
 ## Development
