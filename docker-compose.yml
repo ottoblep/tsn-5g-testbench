@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Core Network
   db:
     profiles: ["cn"]
     container_name: mongodb
@@ -237,8 +238,9 @@ services:
       tsn-bridge-in: # eth1
         ipv4_address: 10.100.201.100
 
+  # RFSim Setup
   oai-gnb-rfsim:
-    profiles: ["ran-rfsim"]
+    profiles: ["ran-rfsim-1", "ran-rfsim-2", "ran-rfsim-3"]
     image: oaisoftwarealliance/oai-gnb:2024.w23
     privileged: true
     container_name: oai-gnb
@@ -255,42 +257,11 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/gnb.sa.band78.106prb.rfsim.conf:/opt/oai-gnb/etc/gnb.conf
-    healthcheck:
-        test: /bin/bash -c "pgrep nr-softmodem"
-        interval: 10s
-        timeout: 5s
-        retries: 5
-
-  oai-gnb:
-    profiles: ["gnb"]
-    image: oaisoftwarealliance/oai-gnb:2024.w23
-    privileged: true
-    container_name: oai-gnb
-    environment:
-        USE_ADDITIONAL_OPTIONS: --sa -E --gNBs.[0].min_rxtxtime 6 --continuous-tx --log_config.global_log_options level,nocolor,time
-        ASAN_OPTIONS: detect_leaks=0
-        USE_B2XX: 1
-    networks:
-      5gs-bridge:
-        ipv4_address: 10.100.200.140
-    cap_add:
-      - NET_ADMIN
-    depends_on:
-      - free5gc-amf
-      - free5gc-upf
-    volumes:
-        - ./config/gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/oai-gnb/etc/gnb.conf
-    healthcheck:
-        test: /bin/bash -c "pgrep nr-softmodem"
-        interval: 10s
-        timeout: 5s
-        retries: 5
-
-  oai-nr-ue-rfsim:
-    profiles: ["ran-rfsim"]
+  oai-nr-ue-rfsim-1:
+    profiles: ["ran-rfsim-1"]
     image: oai-nr-ue-dstt
     privileged: true
-    container_name: oai-nr-ue
+    container_name: oai-nr-ue-1
     command: 
     entrypoint: >
       bash -c "
@@ -310,11 +281,73 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
-    healthcheck:
-        test: /bin/bash -c "pgrep nr-uesoftmodem"
-        interval: 10s
-        timeout: 5s
-        retries: 5
+
+  oai-nr-ue-rfsim-2:
+    profiles: ["ran-rfsim-2"]
+    image: oai-nr-ue-dstt
+    privileged: true
+    container_name: oai-nr-ue-2
+    command: 
+    entrypoint: >
+      bash -c "
+      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunopip 10.100.200.137 -unicast -twostep &
+      /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+      "
+    environment:
+        USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000002 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
+    depends_on:
+        - oai-gnb-rfsim
+    networks:
+      5gs-bridge: # eth0
+        ipv4_address: 10.100.200.151
+    cap_add:
+      - NET_ADMIN
+    volumes:
+        - ./config/nrue.uicc2.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+
+  oai-nr-ue-rfsim-3:
+    profiles: ["ran-rfsim-3"]
+    image: oai-nr-ue-dstt
+    privileged: true
+    container_name: oai-nr-ue-3
+    command: 
+    entrypoint: >
+      bash -c "
+      /go-tt/go-tt -unicastip 10.100.202.200 -portif eth1 -tunopip 10.100.200.137 -unicast -twostep &
+      /opt/oai-nr-ue/bin/entrypoint.sh /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf
+      "
+    environment:
+        USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 --uicc0.imsi 208930000000003 -C 3619200000 --rfsimulator.serveraddr 10.100.200.140 --log_config.global_log_options level,nocolor,time
+    depends_on:
+        - oai-gnb-rfsim
+    networks:
+      5gs-bridge: # eth0
+        ipv4_address: 10.100.200.152
+    cap_add:
+      - NET_ADMIN
+    volumes:
+        - ./config/nrue.uicc3.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+
+  # Physical RAN Setup
+  oai-gnb:
+    profiles: ["gnb"]
+    image: oaisoftwarealliance/oai-gnb:2024.w23
+    privileged: true
+    container_name: oai-gnb
+    environment:
+        USE_ADDITIONAL_OPTIONS: --sa -E --gNBs.[0].min_rxtxtime 6 --continuous-tx --log_config.global_log_options level,nocolor,time
+        ASAN_OPTIONS: detect_leaks=0
+        USE_B2XX: 1
+    networks:
+      5gs-bridge:
+        ipv4_address: 10.100.200.140
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - free5gc-amf
+      - free5gc-upf
+    volumes:
+        - ./config/gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/oai-gnb/etc/gnb.conf
 
   oai-nr-ue:
     profiles: ["ue"]
@@ -337,12 +370,8 @@ services:
       - NET_ADMIN
     volumes:
         - ./config/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
-    healthcheck:
-        test: /bin/bash -c "pgrep nr-uesoftmodem"
-        interval: 10s
-        timeout: 5s
-        retries: 5
 
+  # PTP Emulation Components
   ptp-server: # Base Station Side
     profiles: ["ptpsim"]
     container_name: ptp-server 

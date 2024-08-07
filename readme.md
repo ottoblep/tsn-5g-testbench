@@ -87,7 +87,11 @@ This launches the 5GS + CN on a single docker host machine
 #### Run 5GS
 On first launch this will build some additional images and pull the rest from docker-hub.
 ```bash
-docker compose --profile cn --profile ran-rfsim up
+docker compose --profile cn --profile ran-rfsim-1 up
+```
+It is also possible to start up to three UEs at once.
+```bash
+docker compose --profile cn --profile ran-rfsim-1 --profile ran-rfsim-2 --profile ran-rfsim-3 up
 ```
 
 #### Test Connection
@@ -121,7 +125,7 @@ Since both docker containers utilize the same system clock the timing results ar
 ### Real Radio
 
 The 5GS can be setup with a physical radio channel using two Ettus B210 SDRs.
-One PC will run the UE while the other handles gNB and CN.\
+One PC will run a single UE while the other handles gNB and CN.\
 
 The [installation instructions](#setup) above still apply with some steps being unnecessary.\
 **The UE PC only requires steps [1](#1-install-docker),[2](#2-clone-this-repo-and-pull-submodules),[4](#4-build-customized-oai-images). The gNB+CN PC only requires steps [1](#1-install-docker),[2](#2-clone-this-repo-and-pull-submodules),[3](#3-install-free5gc-kernel-module-for-gtp),[5](#5-build-customized-free5gc-images),[6](#6-import-subscriber-database).**
