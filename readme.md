@@ -103,14 +103,15 @@ oai-nr-ue  | PDU SESSION ESTABLISHMENT ACCEPT - Received UE IP: 10.60.0.1
 
 Confirm IP connection
 ```bash
-docker exec oai-nr-ue ping -I oaitun_ue1 -c 5 10.100.200.137 # Uplink ping from UE container to UPF
+docker exec oai-nr-ue-1 ping -I oaitun_ue1 -c 5 10.100.200.137 # Uplink ping from UE container to UPF
 docker exec upf ping -c 5 10.60.0.1 # Downlink ping from UPF container to UE
 ```
 
 For bandwidth testing
 ```bash
-iperf3 -B 10.60.0.1 -i 1 -s # On UE
-iperf3 -c 10.60.0.1 -u -i 1 -t 20 -b 100000K # On UPF
+docker exec oai-nr-ue-1 iperf3 -B 10.60.0.1 -i 1 -s
+docker exec upf apt install iperf3 -y
+docker exec upf iperf3 -c 10.60.0.1 -u -i 1 -t 20 -b 100000K
 ```
 
 #### PTP Emulation
