@@ -1,69 +1,72 @@
-<mxfile host="Electron" modified="2024-08-13T10:32:37.787Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.0 Chrome/122.0.6261.156 Electron/29.4.5 Safari/537.36" etag="4WkAR-HN937LI_8xctoY" version="24.3.1" type="device">
+<mxfile host="Electron" modified="2024-08-13T13:57:18.964Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.0 Chrome/122.0.6261.156 Electron/29.4.5 Safari/537.36" etag="uwvO1JDlilE55A_I_aMk" version="24.3.1" type="device">
   <diagram name="Page-1" id="7q6BJg5EaVJyylkUe9dV">
-    <mxGraphModel dx="1182" dy="723" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="810" dy="495" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="EPOmnSLY8IL3GNre52A7-10" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-10" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
           <mxGeometry x="250" y="280" width="180" height="240" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-2" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-2" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="200" y="426.01" as="sourcePoint" />
             <mxPoint x="280" y="426.01" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-3" value="Ethernet Traffic&lt;div&gt;with Priority Code Point (PCP)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="EPOmnSLY8IL3GNre52A7-2">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-3" value="Ethernet Traffic&lt;div&gt;with Priority Code Point (PCP)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="EPOmnSLY8IL3GNre52A7-2" vertex="1" connectable="0">
           <mxGeometry x="-0.5091" relative="1" as="geometry">
             <mxPoint x="-19" y="-19" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-7" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-7" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
           <mxGeometry x="500" y="280" width="180" height="240" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-4" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-4" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="715" y="426.25" as="sourcePoint" />
             <mxPoint x="640" y="426.25" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-5" value="Ethernet Traffic&lt;div&gt;with Priority Code Point (PCP)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="EPOmnSLY8IL3GNre52A7-4">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-5" value="Ethernet Traffic&lt;div&gt;with Priority Code Point (PCP)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="EPOmnSLY8IL3GNre52A7-4" vertex="1" connectable="0">
           <mxGeometry x="-0.5091" relative="1" as="geometry">
             <mxPoint x="23" y="-19" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-9" value="UPF" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-9" value="UPF" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="500" y="290" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-11" value="UE" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-11" value="UE" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="250" y="290" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-12" value="Packet&lt;div&gt;Detection Rule&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-12" value="Packet&lt;div&gt;Detection Rule&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="570" y="339.37" width="70" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-13" value="QoS&lt;div&gt;Rule&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-13" value="QoS&lt;div&gt;Rule&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
           <mxGeometry x="280" y="354.37" width="70" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-15" value="Packet Filter Set" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-15" value="Packet Filter Set" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="280" y="389.37" width="120" height="17.5" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-16" value="Ethernet or&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp;IP&lt;/span&gt;&lt;div&gt;&lt;div&gt;Packet Filter&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-16" value="Ethernet or&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp;IP&lt;/span&gt;&lt;div&gt;&lt;div&gt;Packet Filter&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="280" y="406.87" width="120" height="38.75" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-18" value="Packet Filter Set" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-18" value="Packet Filter Set" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="520" y="389.37" width="120" height="17.5" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-19" value="Ethernet or IP&lt;div&gt;Packet Filter&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-19" value="Ethernet or IP&lt;div&gt;Packet Filter&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="520" y="406.87" width="120" height="38.75" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-20" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;QoS Mapping&lt;/h1&gt;&lt;p&gt;How ethernet packets are assigned their QoS flow and priorities&lt;/p&gt;&lt;p&gt;TSN AF can indirectly set rules for TSN traffic&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-20" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;QoS Mapping&lt;/h1&gt;&lt;p&gt;How ethernet packets are assigned their QoS flow and priorities&lt;/p&gt;&lt;p&gt;TSN AF can indirectly set rules for TSN traffic&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="250" y="130" width="400" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-21" value="Implementation&amp;nbsp;&lt;div&gt;Notes&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-21" value="Implementation&amp;nbsp;&lt;div&gt;Notes&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
           <mxGeometry x="170" y="540" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="EPOmnSLY8IL3GNre52A7-23" value="gtp5g supports only&lt;div&gt;IP not ethernet filter rules&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="EPOmnSLY8IL3GNre52A7-23" value="gtp5g supports only&lt;div&gt;IP not ethernet filter rules&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="510" y="535" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XUJPwtC3YTqQ9Kmt3vL2-1" value="no filtering support&lt;div&gt;in OAI&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="280" y="535" width="120" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
