@@ -22,11 +22,11 @@ A software emulated 5G-TSN bridge system.
 - **TSN** 
     - [x] Transparent Clock
         - [x] E2E delay measurement and packet update
-            - [ ] 5GS clock synchronization via RRC or SIB
+            - [ ] DS-TT/NW-TT clock synchronization via RRC or SIB
         - [x] Full PTP emulation for validating transparent clock functionality 
     - [ ] TSN Integration, QoS aware Scheduler
-        - [ ] Ethernet packet filters for gNB and UE (can read Priority Code Point (PCP))
-        - [ ] TSN Application Function 
+        - [ ] Ethernet packet filters for gNB and UE (can read Priority Code Point (PCP) of TSN Packets)
+        - [ ] TSN Application Function (communicates with TSN network)
         - [ ] QoS aware scheduler
 
 ## Setup
