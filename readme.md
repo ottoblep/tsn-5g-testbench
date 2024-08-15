@@ -25,6 +25,7 @@ A software emulated 5G-TSN bridge system.
             - [ ] DS-TT/NW-TT clock synchronization via RRC or SIB
         - [x] Full PTP emulation for validating transparent clock functionality 
     - [ ] TSN Integration, QoS aware Scheduler
+        - [ ] Preserve TSN information in ethernet header through the Translation Units 
         - [ ] Ethernet packet filters for gNB and UE (can read Priority Code Point (PCP) of TSN Packets)
         - [ ] TSN Application Function (communicates with TSN network)
         - [ ] QoS aware scheduler
