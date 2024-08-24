@@ -26,6 +26,7 @@ A software emulated 5G-TSN bridge system.
         - [x] Full PTP emulation for validating transparent clock functionality 
     - [ ] TSN Integration, QoS aware Scheduler
         - [ ] Preserve TSN information in ethernet header through the Translation Units 
+            - [ ] Use [AF_PACKET](https://pkg.go.dev/github.com/mdlayher/packet) socket for accessing header
         - [ ] Ethernet packet filters for gNB and UE (can read Priority Code Point (PCP) of TSN Packets)
         - [ ] TSN Application Function (communicates with TSN network)
         - [ ] QoS aware scheduler
